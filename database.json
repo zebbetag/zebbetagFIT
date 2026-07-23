@@ -1,0 +1,458 @@
+{
+  "workouts": [
+    {
+      "id": "idkze8rviwrj",
+      "personaId": "p1",
+      "date": "2026-07-15",
+      "muscles": [
+        "Pectoral",
+        "Tríceps"
+      ],
+      "cardio": {
+        "on": false
+      },
+      "exercises": [
+        {
+          "name": "Press banca",
+          "weight": 60,
+          "unit": "kg",
+          "sets": 4,
+          "reps": 10
+        },
+        {
+          "name": "Aperturas",
+          "weight": 14,
+          "unit": "kg",
+          "sets": 3,
+          "reps": 12
+        },
+        {
+          "name": "Extensión tríceps polea",
+          "weight": 25,
+          "unit": "kg",
+          "sets": 4,
+          "reps": 12
+        }
+      ]
+    },
+    {
+      "id": "idn88dh63wrj",
+      "personaId": "p1",
+      "date": "2026-07-20",
+      "muscles": [
+        "Pectoral",
+        "Tríceps"
+      ],
+      "cardio": {
+        "on": false
+      },
+      "exercises": [
+        {
+          "name": "Press banca",
+          "weight": 67.5,
+          "unit": "kg",
+          "sets": 4,
+          "reps": 10
+        },
+        {
+          "name": "Aperturas",
+          "weight": 16,
+          "unit": "kg",
+          "sets": 3,
+          "reps": 12
+        },
+        {
+          "name": "Extensión tríceps polea",
+          "weight": 27.5,
+          "unit": "kg",
+          "sets": 4,
+          "reps": 12
+        }
+      ]
+    },
+    {
+      "id": "ideeips3ywrj",
+      "personaId": "p1",
+      "date": "2026-07-23",
+      "muscles": [
+        "Espalda",
+        "Bíceps"
+      ],
+      "cardio": {
+        "on": true,
+        "time": 15,
+        "incline": 2,
+        "level": 6,
+        "machine": "Caminadora"
+      },
+      "exercises": [
+        {
+          "name": "Jalón al pecho",
+          "weight": 55,
+          "unit": "kg",
+          "sets": 4,
+          "reps": 12
+        },
+        {
+          "name": "Curl con barra",
+          "weight": 22.5,
+          "unit": "kg",
+          "sets": 3,
+          "reps": 12
+        }
+      ]
+    },
+    {
+      "id": "idex29cngwrj",
+      "personaId": "p2",
+      "date": "2026-07-17",
+      "muscles": [
+        "Pierna"
+      ],
+      "cardio": {
+        "on": false
+      },
+      "exercises": [
+        {
+          "name": "Sentadilla",
+          "weight": 70,
+          "unit": "kg",
+          "sets": 4,
+          "reps": 10
+        },
+        {
+          "name": "Prensa",
+          "weight": 120,
+          "unit": "kg",
+          "sets": 4,
+          "reps": 12
+        }
+      ]
+    },
+    {
+      "id": "idd3itecnwrj",
+      "personaId": "p2",
+      "date": "2026-07-22",
+      "muscles": [
+        "Pierna",
+        "Abdomen"
+      ],
+      "cardio": {
+        "on": true,
+        "time": 20,
+        "incline": 4,
+        "level": 8,
+        "machine": "Escaladora"
+      },
+      "exercises": [
+        {
+          "name": "Sentadilla",
+          "weight": 85,
+          "unit": "kg",
+          "sets": 5,
+          "reps": 8
+        },
+        {
+          "name": "Prensa",
+          "weight": 150,
+          "unit": "kg",
+          "sets": 4,
+          "reps": 12
+        },
+        {
+          "name": "Plancha",
+          "weight": 0,
+          "unit": "kg",
+          "sets": 3,
+          "reps": 60
+        }
+      ]
+    },
+    {
+      "id": "idr41n7fbwrj",
+      "personaId": "p3",
+      "date": "2026-07-18",
+      "muscles": [
+        "Espalda",
+        "Hombro"
+      ],
+      "cardio": {
+        "on": false
+      },
+      "exercises": [
+        {
+          "name": "Jalón al pecho",
+          "weight": 45,
+          "unit": "kg",
+          "sets": 4,
+          "reps": 12
+        },
+        {
+          "name": "Press militar",
+          "weight": 30,
+          "unit": "kg",
+          "sets": 4,
+          "reps": 10
+        }
+      ]
+    },
+    {
+      "id": "idljf14ctwrj",
+      "personaId": "p3",
+      "date": "2026-07-23",
+      "muscles": [
+        "Espalda",
+        "Hombro"
+      ],
+      "cardio": {
+        "on": false
+      },
+      "exercises": [
+        {
+          "name": "Jalón al pecho",
+          "weight": 52.5,
+          "unit": "kg",
+          "sets": 4,
+          "reps": 11
+        },
+        {
+          "name": "Press militar",
+          "weight": 35,
+          "unit": "kg",
+          "sets": 4,
+          "reps": 10
+        }
+      ]
+    }
+  ],
+  "weights": [
+    {
+      "id": "idhjslq9cwrj",
+      "personaId": "p1",
+      "date": "2026-07-02",
+      "weight": 70.2
+    },
+    {
+      "id": "idam5khybwrj",
+      "personaId": "p1",
+      "date": "2026-07-16",
+      "weight": 69.4
+    },
+    {
+      "id": "idq2mo6rjwrj",
+      "personaId": "p1",
+      "date": "2026-07-22",
+      "weight": 69
+    },
+    {
+      "id": "idwh4jyj9wrj",
+      "personaId": "p2",
+      "date": "2026-07-02",
+      "weight": 82.5
+    },
+    {
+      "id": "id2nls2xewrj",
+      "personaId": "p2",
+      "date": "2026-07-16",
+      "weight": 81.3
+    },
+    {
+      "id": "id8r3fagcwrj",
+      "personaId": "p2",
+      "date": "2026-07-22",
+      "weight": 80.6
+    },
+    {
+      "id": "idioq8igrwrj",
+      "personaId": "p3",
+      "date": "2026-07-09",
+      "weight": 60.1
+    },
+    {
+      "id": "idt82iq7vwrj",
+      "personaId": "p3",
+      "date": "2026-07-21",
+      "weight": 60.8
+    }
+  ],
+  "meals": [
+    {
+      "id": "id340nxi8wrj",
+      "personaId": "p1",
+      "date": "2026-07-23",
+      "items": [
+        {
+          "dish": "Avena",
+          "portion": 80,
+          "unitType": "g"
+        },
+        {
+          "dish": "Whey protein (scoop)",
+          "portion": 1,
+          "unitType": "u"
+        },
+        {
+          "dish": "Pechuga de pollo",
+          "portion": 200,
+          "unitType": "g"
+        }
+      ]
+    },
+    {
+      "id": "idyj64f62wrj",
+      "personaId": "p2",
+      "date": "2026-07-23",
+      "items": [
+        {
+          "dish": "Arroz blanco cocido",
+          "portion": 250,
+          "unitType": "g"
+        },
+        {
+          "dish": "Pechuga de pollo",
+          "portion": 250,
+          "unitType": "g"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "idyfzcya4wrj",
+      "userId": "demo",
+      "name": "Jalón al pecho",
+      "muscle": "Espalda"
+    },
+    {
+      "id": "id8akk8siwrj",
+      "userId": "demo",
+      "name": "Remo con barra",
+      "muscle": "Espalda"
+    },
+    {
+      "id": "idflacqb3wrj",
+      "userId": "demo",
+      "name": "Curl con barra",
+      "muscle": "Bíceps"
+    },
+    {
+      "id": "id08f3y1iwrj",
+      "userId": "demo",
+      "name": "Press banca",
+      "muscle": "Pectoral"
+    },
+    {
+      "id": "idyuzcq0vwrj",
+      "userId": "demo",
+      "name": "Aperturas",
+      "muscle": "Pectoral"
+    },
+    {
+      "id": "idrqg26b0wrj",
+      "userId": "demo",
+      "name": "Press militar",
+      "muscle": "Hombro"
+    },
+    {
+      "id": "idw6zpf9nwrj",
+      "userId": "demo",
+      "name": "Extensión tríceps polea",
+      "muscle": "Tríceps"
+    },
+    {
+      "id": "ids8zl3yxwrj",
+      "userId": "demo",
+      "name": "Sentadilla",
+      "muscle": "Pierna"
+    },
+    {
+      "id": "iddc34vnywrj",
+      "userId": "demo",
+      "name": "Prensa",
+      "muscle": "Pierna"
+    },
+    {
+      "id": "idc8odj1swrj",
+      "userId": "demo",
+      "name": "Plancha",
+      "muscle": "Abdomen"
+    }
+  ],
+  "dishes": [
+    {
+      "id": "idglb3rf0wrj",
+      "userId": "demo",
+      "name": "Pechuga de pollo",
+      "kcal": 165,
+      "protein": 31,
+      "carbs": 0,
+      "fat": 3.6,
+      "portion": 100,
+      "unitType": "g"
+    },
+    {
+      "id": "id5bvvyfxwrj",
+      "userId": "demo",
+      "name": "Arroz blanco cocido",
+      "kcal": 130,
+      "protein": 2.7,
+      "carbs": 28,
+      "fat": 0.3,
+      "portion": 100,
+      "unitType": "g"
+    },
+    {
+      "id": "idf8t8mo0wrj",
+      "userId": "demo",
+      "name": "Huevo entero",
+      "kcal": 78,
+      "protein": 6.3,
+      "carbs": 0.6,
+      "fat": 5.3,
+      "portion": 1,
+      "unitType": "u"
+    },
+    {
+      "id": "id4ut2pqgwrj",
+      "userId": "demo",
+      "name": "Avena",
+      "kcal": 389,
+      "protein": 16.9,
+      "carbs": 66,
+      "fat": 6.9,
+      "portion": 100,
+      "unitType": "g"
+    },
+    {
+      "id": "idnkaohf1wrj",
+      "userId": "demo",
+      "name": "Whey protein (scoop)",
+      "kcal": 120,
+      "protein": 24,
+      "carbs": 3,
+      "fat": 1.5,
+      "portion": 1,
+      "unitType": "u"
+    }
+  ],
+  "goals": {
+    "p1": {
+      "kcal": 2000,
+      "protein": 150,
+      "carbs": 210,
+      "fat": 60
+    },
+    "p2": {
+      "kcal": 2800,
+      "protein": 190,
+      "carbs": 300,
+      "fat": 85
+    },
+    "p3": {
+      "kcal": 1800,
+      "protein": 130,
+      "carbs": 190,
+      "fat": 55
+    }
+  }
+}
