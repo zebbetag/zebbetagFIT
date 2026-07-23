@@ -387,13 +387,46 @@ function savePersonas(){
 const CFG_KEY = 'zebbetag_cfg';
 // Config base opcional: si rellenas owner/repo aquí, TODOS los usuarios leen el archivo
 // central automáticamente (solo lectura, sin token). El token de escritura lo pone el admin.
-const DEFAULT_CLOUD = { owner:'', repo:'', branch:'main', path:'database.json' };
+// Config base. Con un Worker de Cloudflare, el token vive en el servidor (NUNCA aquí):
+//   - workerUrl: URL de tu Worker (ej. https://zebbetagfit.tuusuario.workers.dev)
+//   - appKey: clave simple que el Worker exige para escribir (evita abuso casual)
+// Si dejas workerUrl vacío, la app usa lectura pública por raw (owner/repo) como respaldo.
+const DEFAULT_CLOUD = { owner:'zebbetag', repo:'zebbetagFIT', branch:'main', path:'database.json',
+  workerUrl:'https://dry-bush-4b25.zebbetag.workers.dev', appKey:'zebbetagfitness' };
 function cfgGet(){ let saved={}; try{ saved = JSON.parse(localStorage.getItem(CFG_KEY)) || {}; }catch(e){} return Object.assign({}, DEFAULT_CLOUD, saved); }
 function cfgSet(c){ localStorage.setItem(CFG_KEY, JSON.stringify(c)); }
-function cloudCanRead(){ const c=cfgGet(); return !!(c.owner && c.repo); }
-function cloudCanWrite(){ const c=cfgGet(); return !!(c.owner && c.repo && c.token); }
+function useWorker(){ return !!cfgGet().workerUrl; }
+function cloudCanRead(){ const c=cfgGet(); return !!(c.workerUrl || (c.owner && c.repo)); }
+function cloudCanWrite(){ const c=cfgGet(); return !!(c.workerUrl || (c.owner && c.repo && c.token)); }
 function ghPath(){ return (cfgGet().path || 'database.json'); }
 function ghBranch(){ return (cfgGet().branch || 'main'); }
+
+/* Capa remota: usa el Worker si está configurado; si no, GitHub directo (token) o raw público. */
+async function remoteGet(){
+  const c = cfgGet();
+  if(c.workerUrl){
+    const r = await fetch(c.workerUrl.replace(/\/+$/,'') + '/db', { cache:'no-store' });
+    if(!r.ok) throw new Error('Worker ' + r.status);
+    const j = await r.json();
+    return { data: j.data || null, sha: j.sha || null };
+  }
+  if(c.token) return await ghGetFile();
+  return { data: await ghRawRead(), sha: null };
+}
+async function remotePut(payload){
+  const c = cfgGet();
+  if(c.workerUrl){
+    const r = await fetch(c.workerUrl.replace(/\/+$/,'') + '/db', {
+      method:'PUT',
+      headers:{ 'Content-Type':'application/json', 'X-App-Key': c.appKey || '' },
+      body: JSON.stringify({ data: payload })
+    });
+    if(!r.ok) throw new Error('Worker ' + r.status + ' ' + (await r.text()));
+    return await r.json();
+  }
+  const { sha } = await ghGetFile();
+  return await ghPutFile(payload, sha);
+}
 
 function b64encode(str){ return btoa(unescape(encodeURIComponent(str))); }
 function b64decode(str){ return decodeURIComponent(escape(atob((str||'').replace(/\n/g,'')))); }
@@ -465,14 +498,9 @@ async function cloudPush(){
   if(!cloudCanWrite() || pushing) return;
   pushing = true; setSyncStatus('sync','Sincronizando…');
   try{
-    let { data:remote, sha } = await ghGetFile();
-    let payload = mergeForPush(remote);
-    try{ await ghPutFile(payload, sha); }
-    catch(e){
-      if((''+e).indexOf('409')>-1 || (''+e).indexOf('422')>-1){ // conflicto: recargar y reintentar
-        const g = await ghGetFile(); payload = mergeForPush(g.data); await ghPutFile(payload, g.sha);
-      } else throw e;
-    }
+    const { data:remote } = await remoteGet();
+    const payload = mergeForPush(remote);
+    await remotePut(payload);
     setSyncStatus('ok','En la nube');
   }catch(e){ console.error(e); setSyncStatus('err','Error de nube · local ok'); }
   finally{ pushing = false; }
@@ -481,8 +509,8 @@ async function cloudPull(){
   if(!cloudCanRead()) return false;
   setSyncStatus('sync','Cargando…');
   try{
-    const shared = cfgGet().token ? (await ghGetFile()).data : await ghRawRead();
-    applyRemote(shared);
+    const { data } = await remoteGet();
+    applyRemote(data);
     setSyncStatus(cloudCanWrite()?'ok':'read', cloudCanWrite()?'En la nube':'Lectura nube');
     if(document.getElementById('app') && !document.getElementById('app').classList.contains('hide')) go(section);
     return true;
@@ -509,14 +537,18 @@ function openConfig(){
       ⚠️ <b>Seguridad:</b> el token se guarda en <b>este navegador</b> y quien tenga acceso al equipo puede leerlo. Usa un <b>token fine-grained</b> limitado <b>solo a este repo</b> con permiso <b>Contents: Read and write</b>, nunca uno de tu cuenta completa. Si el repo es público, lo que subas será visible para cualquiera. Para <b>leer</b>, tus amigos no necesitan token: basta usuario y repo.
     </div>
     <div class="grid grid-cols-2 gap-2 mb-2">
-      <div><label class="fld">Usuario / organización</label><input id="cf-owner" value="${escapeHtml(c.owner||'')}" placeholder="zebbepro"></div>
-      <div><label class="fld">Repositorio</label><input id="cf-repo" value="${escapeHtml(c.repo||'')}" placeholder="zebbetag-fitness"></div>
+      <div><label class="fld">Usuario / organización</label><input id="cf-owner" value="${escapeHtml(c.owner||'')}" placeholder="zebbetag"></div>
+      <div><label class="fld">Repositorio</label><input id="cf-repo" value="${escapeHtml(c.repo||'')}" placeholder="zebbetagFIT"></div>
       <div><label class="fld">Rama</label><input id="cf-branch" value="${escapeHtml(c.branch||'main')}" placeholder="main"></div>
       <div><label class="fld">Archivo</label><input id="cf-path" value="${escapeHtml(c.path||'database.json')}" placeholder="database.json"></div>
     </div>
-    <label class="fld">Token (solo para escribir)</label>
-    <input id="cf-token" type="password" value="${escapeHtml(c.token||'')}" placeholder="github_pat_… (opcional para solo lectura)">
-    <p class="text-xs mt-2" style="color:var(--txt-2)">Este panel es solo para el administrador. Los usuarios leen el archivo central de forma automática (sin token) y solo pueden registrar lo suyo. Lo que registres como admin se refleja en sus cuentas al sincronizar.</p>
+    <label class="fld">Worker URL (recomendado)</label>
+    <input id="cf-worker" value="${escapeHtml(c.workerUrl||'')}" placeholder="https://zebbetagfit.tuusuario.workers.dev" class="mb-2">
+    <label class="fld">Clave de app (la que pusiste en el Worker)</label>
+    <input id="cf-appkey" value="${escapeHtml(c.appKey||'')}" placeholder="opcional" class="mb-2">
+    <label class="fld">Token de GitHub (solo si NO usas Worker)</label>
+    <input id="cf-token" type="password" value="${escapeHtml(c.token||'')}" placeholder="déjalo vacío si usas Worker">
+    <p class="text-xs mt-2" style="color:var(--txt-2)">Con Worker de Cloudflare el token vive en el servidor: aquí déjalo vacío. Normalmente no hace falta tocar nada porque estos valores ya vienen en el código.</p>
     <p id="cf-status" class="text-xs mt-3 min-h-[1rem]" style="color:var(--txt-2)"></p>
     <div class="grid grid-cols-2 gap-2 mt-2">
       <button class="btn-ghost rounded-2xl py-2.5" onclick="testConn()">Probar conexión</button>
@@ -531,6 +563,7 @@ function readCfgFields(){
   cfgSet({
     owner:$('#cf-owner').value.trim(), repo:$('#cf-repo').value.trim(),
     branch:$('#cf-branch').value.trim()||'main', path:$('#cf-path').value.trim()||'database.json',
+    workerUrl:$('#cf-worker').value.trim(), appKey:$('#cf-appkey').value.trim(),
     token:$('#cf-token').value.trim()
   });
 }
@@ -543,12 +576,12 @@ function saveConfig(){
 async function testConn(){
   const s = $('#cf-status'); s.style.color='var(--txt-2)'; s.textContent='Probando…';
   readCfgFields();
-  if(!cloudCanRead()){ s.style.color='var(--red)'; s.textContent='Falta usuario y/o repositorio.'; return; }
+  if(!cloudCanRead()){ s.style.color='var(--red)'; s.textContent='Falta Worker URL, o usuario/repositorio.'; return; }
   try{
-    const r = await ghGetFile();
+    const { data } = await remoteGet();
     s.style.color='#34C759';
-    s.textContent = r.data
-      ? `Conexión OK · database.json encontrado (${(r.data.workouts||[]).length} entrenamientos)`
+    s.textContent = data
+      ? `Conexión OK · ${(data.workouts||[]).length} entrenamientos en la nube`
       : 'Conexión OK · se creará database.json al sincronizar';
   }catch(e){ s.style.color='var(--red)'; s.textContent = 'Falló: ' + (''+e).replace('Error: ',''); }
 }
@@ -604,7 +637,7 @@ function enterApp(){
   $('#auth').classList.add('hide');
   $('#app').classList.remove('hide');
   $('#who').textContent = (isAdmin()?'Admin · ':'') + u.name;
-  document.getElementById('cfg-btn').classList.toggle('hide', !isAdmin());  // config de nube solo para admin
+  document.getElementById('cfg-btn').classList.remove('hide');  // Opción B: cada usuario pone su propio token
   go('train');
   if(cloudCanRead()){ setSyncStatus('sync','Conectando…'); cloudPull(); }
   else setSyncStatus('local','Solo local');
