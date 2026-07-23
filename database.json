@@ -1,6 +1,108 @@
 {
   "workouts": [
     {
+      "id": "idkze8rviwrj",
+      "personaId": "p1",
+      "date": "2026-07-15",
+      "muscles": [
+        "Pectoral",
+        "Tríceps"
+      ],
+      "cardio": {
+        "on": false
+      },
+      "exercises": [
+        {
+          "name": "Press banca",
+          "weight": 60,
+          "unit": "kg",
+          "sets": 4,
+          "reps": 10
+        },
+        {
+          "name": "Aperturas",
+          "weight": 14,
+          "unit": "kg",
+          "sets": 3,
+          "reps": 12
+        },
+        {
+          "name": "Extensión tríceps polea",
+          "weight": 25,
+          "unit": "kg",
+          "sets": 4,
+          "reps": 12
+        }
+      ]
+    },
+    {
+      "id": "idn88dh63wrj",
+      "personaId": "p1",
+      "date": "2026-07-20",
+      "muscles": [
+        "Pectoral",
+        "Tríceps"
+      ],
+      "cardio": {
+        "on": false
+      },
+      "exercises": [
+        {
+          "name": "Press banca",
+          "weight": 67.5,
+          "unit": "kg",
+          "sets": 4,
+          "reps": 10
+        },
+        {
+          "name": "Aperturas",
+          "weight": 16,
+          "unit": "kg",
+          "sets": 3,
+          "reps": 12
+        },
+        {
+          "name": "Extensión tríceps polea",
+          "weight": 27.5,
+          "unit": "kg",
+          "sets": 4,
+          "reps": 12
+        }
+      ]
+    },
+    {
+      "id": "ideeips3ywrj",
+      "personaId": "p1",
+      "date": "2026-07-23",
+      "muscles": [
+        "Espalda",
+        "Bíceps"
+      ],
+      "cardio": {
+        "on": true,
+        "time": 15,
+        "incline": 2,
+        "level": 6,
+        "machine": "Caminadora"
+      },
+      "exercises": [
+        {
+          "name": "Jalón al pecho",
+          "weight": 55,
+          "unit": "kg",
+          "sets": 4,
+          "reps": 12
+        },
+        {
+          "name": "Curl con barra",
+          "weight": 22.5,
+          "unit": "kg",
+          "sets": 3,
+          "reps": 12
+        }
+      ]
+    },
+    {
       "id": "idex29cngwrj",
       "personaId": "p2",
       "date": "2026-07-17",
@@ -121,111 +223,27 @@
           "reps": 10
         }
       ]
-    },
-    {
-      "id": "idkze8rviwrj",
-      "personaId": "p1",
-      "date": "2026-07-15",
-      "muscles": [
-        "Pectoral",
-        "Tríceps"
-      ],
-      "cardio": {
-        "on": false
-      },
-      "exercises": [
-        {
-          "name": "Press banca",
-          "weight": 60,
-          "unit": "kg",
-          "sets": 4,
-          "reps": 10
-        },
-        {
-          "name": "Aperturas",
-          "weight": 14,
-          "unit": "kg",
-          "sets": 3,
-          "reps": 12
-        },
-        {
-          "name": "Extensión tríceps polea",
-          "weight": 25,
-          "unit": "kg",
-          "sets": 4,
-          "reps": 12
-        }
-      ]
-    },
-    {
-      "id": "idn88dh63wrj",
-      "personaId": "p1",
-      "date": "2026-07-20",
-      "muscles": [
-        "Pectoral",
-        "Tríceps"
-      ],
-      "cardio": {
-        "on": false
-      },
-      "exercises": [
-        {
-          "name": "Press banca",
-          "weight": 67.5,
-          "unit": "kg",
-          "sets": 4,
-          "reps": 10
-        },
-        {
-          "name": "Aperturas",
-          "weight": 16,
-          "unit": "kg",
-          "sets": 3,
-          "reps": 12
-        },
-        {
-          "name": "Extensión tríceps polea",
-          "weight": 27.5,
-          "unit": "kg",
-          "sets": 4,
-          "reps": 12
-        }
-      ]
-    },
-    {
-      "id": "ideeips3ywrj",
-      "personaId": "p1",
-      "date": "2026-07-23",
-      "muscles": [
-        "Espalda",
-        "Bíceps"
-      ],
-      "cardio": {
-        "on": true,
-        "time": 15,
-        "incline": 2,
-        "level": 6,
-        "machine": "Caminadora"
-      },
-      "exercises": [
-        {
-          "name": "Jalón al pecho",
-          "weight": 55,
-          "unit": "kg",
-          "sets": 4,
-          "reps": 12
-        },
-        {
-          "name": "Curl con barra",
-          "weight": 22.5,
-          "unit": "kg",
-          "sets": 3,
-          "reps": 12
-        }
-      ]
     }
   ],
   "weights": [
+    {
+      "id": "idhjslq9cwrj",
+      "personaId": "p1",
+      "date": "2026-07-02",
+      "weight": 70.2
+    },
+    {
+      "id": "idam5khybwrj",
+      "personaId": "p1",
+      "date": "2026-07-16",
+      "weight": 69.4
+    },
+    {
+      "id": "idq2mo6rjwrj",
+      "personaId": "p1",
+      "date": "2026-07-22",
+      "weight": 69
+    },
     {
       "id": "idwh4jyj9wrj",
       "personaId": "p2",
@@ -257,24 +275,6 @@
       "weight": 60.8
     },
     {
-      "id": "idhjslq9cwrj",
-      "personaId": "p1",
-      "date": "2026-07-02",
-      "weight": 70.2
-    },
-    {
-      "id": "idam5khybwrj",
-      "personaId": "p1",
-      "date": "2026-07-16",
-      "weight": 69.4
-    },
-    {
-      "id": "idq2mo6rjwrj",
-      "personaId": "p1",
-      "date": "2026-07-22",
-      "weight": 69
-    },
-    {
       "id": "id38st7qr9qa",
       "personaId": "p1",
       "date": "2026-07-23",
@@ -282,23 +282,6 @@
     }
   ],
   "meals": [
-    {
-      "id": "idyj64f62wrj",
-      "personaId": "p2",
-      "date": "2026-07-23",
-      "items": [
-        {
-          "dish": "Arroz blanco cocido",
-          "portion": 250,
-          "unitType": "g"
-        },
-        {
-          "dish": "Pechuga de pollo",
-          "portion": 250,
-          "unitType": "g"
-        }
-      ]
-    },
     {
       "id": "id340nxi8wrj",
       "personaId": "p1",
@@ -317,6 +300,23 @@
         {
           "dish": "Pechuga de pollo",
           "portion": 200,
+          "unitType": "g"
+        }
+      ]
+    },
+    {
+      "id": "idyj64f62wrj",
+      "personaId": "p2",
+      "date": "2026-07-23",
+      "items": [
+        {
+          "dish": "Arroz blanco cocido",
+          "portion": 250,
+          "unitType": "g"
+        },
+        {
+          "dish": "Pechuga de pollo",
+          "portion": 250,
           "unitType": "g"
         }
       ]
