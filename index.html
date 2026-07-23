@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>zebbetag Fitness</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root{
+    --bg-0:#0B0B0C; --bg-1:#121214;
+    --red:#FF2D55; --orange:#FF9500;
+    --txt:#FFFFFF; --txt-2:#A1A1AA;
+    --line:rgba(255,255,255,.15);
+  }
+  *{ -webkit-tap-highlight-color:transparent; }
+  html,body{ height:100%; }
+  body{
+    margin:0; background:var(--bg-0); color:var(--txt);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Inter,system-ui,sans-serif;
+    overflow-x:hidden;
+  }
+  /* Ambient gradient blobs */
+  .amb{ position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none; }
+  .amb::before,.amb::after{
+    content:""; position:absolute; width:55vw; height:55vw; border-radius:50%;
+    filter:blur(120px); opacity:.35;
+  }
+  .amb::before{ background:radial-gradient(circle,#FF2D55,transparent 70%); top:-15vw; right:-10vw; }
+  .amb::after{ background:radial-gradient(circle,#FF9500,transparent 70%); bottom:-20vw; left:-15vw; opacity:.28; }
+
+  .glass{
+    background:rgba(255,255,255,.06);
+    backdrop-filter:blur(22px) saturate(150%);
+    -webkit-backdrop-filter:blur(22px) saturate(150%);
+    border:1px solid rgba(255,255,255,.12);
+    box-shadow:0 8px 40px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.12);
+  }
+  .glass-strong{
+    background:rgba(255,255,255,.10);
+    backdrop-filter:blur(30px) saturate(160%);
+    -webkit-backdrop-filter:blur(30px) saturate(160%);
+    border:1px solid rgba(255,255,255,.16);
+    box-shadow:0 12px 50px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.18);
+  }
+  .grad{ background:linear-gradient(135deg,var(--red),var(--orange)); }
+  .grad-text{ background:linear-gradient(135deg,var(--red),var(--orange)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .btn-accent{
+    background:linear-gradient(135deg,var(--red),var(--orange));
+    color:#fff; font-weight:600; border:none;
+    box-shadow:0 6px 24px rgba(255,45,85,.35);
+    transition:transform .15s ease, box-shadow .2s ease, filter .2s ease;
+  }
+  .btn-accent:hover{ filter:brightness(1.08); box-shadow:0 8px 30px rgba(255,107,0,.45); }
+  .btn-accent:active{ transform:scale(.97); }
+  .btn-ghost{
+    background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.14); color:#fff;
+    transition:background .2s ease, transform .12s ease;
+  }
+  .btn-ghost:hover{ background:rgba(255,255,255,.12); }
+  .btn-ghost:active{ transform:scale(.97); }
+  input,select,textarea{
+    background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.14); color:#fff;
+    border-radius:14px; padding:.95rem 1rem; font-size:.95rem; outline:none; width:100%;
+    transition:border-color .2s ease, box-shadow .2s ease;
+  }
+  input::placeholder,textarea::placeholder{ color:#8b8b93; }
+  input:focus,select:focus,textarea:focus{ border-color:rgba(255,149,0,.6); box-shadow:0 0 0 3px rgba(255,45,85,.18); }
+  select option{ background:#161618; color:#fff; }
+  label.fld{ display:block; font-size:.75rem; color:var(--txt-2); margin:0 0 .35rem .15rem; }
+  .chip{
+    padding:.5rem .9rem; border-radius:999px; font-size:.85rem; cursor:pointer; user-select:none;
+    background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.14); color:var(--txt-2);
+    transition:all .18s ease;
+  }
+  .chip.active{ background:linear-gradient(135deg,var(--red),var(--orange)); color:#fff; border-color:transparent; box-shadow:0 4px 16px rgba(255,45,85,.35); }
+  .tab{ color:var(--txt-2); font-weight:600; padding:.55rem .2rem; position:relative; cursor:pointer; }
+  .tab.active{ color:#fff; }
+  .tab.active::after{ content:""; position:absolute; left:0; right:0; bottom:-2px; height:3px; border-radius:3px; background:linear-gradient(90deg,var(--red),var(--orange)); }
+  .navbtn{ display:flex; flex-direction:column; align-items:center; gap:2px; color:var(--txt-2); font-size:.68rem; font-weight:500; padding:.35rem .9rem; border-radius:16px; cursor:pointer; transition:color .2s ease, background .2s ease; }
+  .navbtn.active{ color:#fff; }
+  .navbtn.active .ic{ background:linear-gradient(135deg,var(--red),var(--orange)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .ic{ font-size:1.35rem; line-height:1; }
+  .over{ color:var(--red) !important; text-shadow:0 0 12px rgba(255,45,85,.5); }
+  .fade{ animation:fade .35s ease; }
+  @keyframes fade{ from{ opacity:0; transform:translateY(8px);} to{ opacity:1; transform:none;} }
+  .modal-bg{ position:fixed; inset:0; z-index:60; background:rgba(0,0,0,.6); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; padding:1rem; animation:fade .2s ease; }
+  ::-webkit-scrollbar{ width:9px; height:9px; }
+  ::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.14); border-radius:9px; }
+  @media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } }
+  .hide{ display:none !important; }
+  .prog-track{ height:9px; border-radius:999px; background:rgba(255,255,255,.10); overflow:hidden; }
+  .prog-fill{ height:100%; border-radius:999px; background:linear-gradient(90deg,var(--red),var(--orange)); transition:width .4s ease; }
+  .chart-box{ position:relative; height:200px; }
+  .dot-spin{ animation:spin 1s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg);} }
+  .warn-box{ background:rgba(255,45,85,.10); border:1px solid rgba(255,45,85,.35); border-radius:16px; padding:.9rem 1rem; font-size:.8rem; line-height:1.4; color:#ffd9e1; }
+</style>
+</head>
+<body>
+<div class="amb"></div>
+
+<!-- ===================== AUTH ===================== -->
+<div id="auth" class="relative z-10 min-h-screen flex items-center justify-center p-5">
+  <div class="glass-strong w-full max-w-md rounded-3xl p-8 fade">
+    <div class="flex items-center gap-3 mb-1">
+      <div class="grad w-11 h-11 rounded-2xl flex items-center justify-center text-2xl shadow-lg">🔥</div>
+      <div>
+        <h1 class="text-2xl font-bold leading-none">zebbetag <span class="grad-text">Fitness</span></h1>
+        <p class="text-xs" style="color:var(--txt-2)">Entrena. Registra. Progresa.</p>
+      </div>
+    </div>
+
+    <div class="flex gap-6 mt-6 mb-5 border-b border-white/10">
+      <div id="tab-login" class="tab active" onclick="setAuthMode('login')">Iniciar sesión</div>
+      <div id="tab-reg" class="tab" onclick="setAuthMode('register')">Registrarse</div>
+    </div>
+
+    <div id="reg-name-wrap" class="hide mb-3">
+      <label class="fld">Nombre</label>
+      <input id="a-name" type="text" placeholder="Tu nombre" />
+    </div>
+    <div class="mb-3">
+      <label class="fld">Correo</label>
+      <input id="a-email" type="email" placeholder="tú@correo.com" />
+    </div>
+    <div class="mb-4">
+      <label class="fld">Contraseña</label>
+      <input id="a-pass" type="password" placeholder="••••••••" />
+    </div>
+    <p id="a-err" class="text-sm mb-3 hide" style="color:var(--red)"></p>
+    <button id="a-submit" class="btn-accent w-full rounded-2xl py-3" onclick="submitAuth()">Entrar</button>
+    <p class="text-center text-xs mt-5 leading-relaxed" style="color:var(--txt-2)">Admin: <b>demo@zebbetag.com</b> / <b>demo</b><br>Usuarios: <b>ana</b>·<b>beto</b>·<b>caro</b>@zebbetag.com (contraseña = su nombre)</p>
+  </div>
+</div>
+
+<!-- ===================== APP ===================== -->
+<div id="app" class="hide relative z-10 min-h-screen">
+  <!-- top bar -->
+  <header class="sticky top-0 z-40 glass px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-2.5">
+      <div class="grad w-9 h-9 rounded-xl flex items-center justify-center text-lg">🔥</div>
+      <span class="font-bold text-lg">zebbetag <span class="grad-text">Fitness</span></span>
+    </div>
+    <div class="flex items-center gap-2">
+      <span id="who" class="text-sm hidden sm:block mr-1" style="color:var(--txt-2)"></span>
+      <div id="sync-badge" class="hide items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-full sm:flex" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)">
+        <span class="dot" style="width:8px;height:8px;border-radius:50%;background:#A1A1AA;display:inline-block"></span>
+        <span class="lbl" style="color:var(--txt-2)"></span>
+      </div>
+      <button id="cfg-btn" class="btn-ghost rounded-xl w-9 h-9 flex items-center justify-center hide" onclick="openConfig()" title="Configuración de nube">⚙️</button>
+      <button class="btn-ghost rounded-xl px-3 py-1.5 text-sm" onclick="logout()">Salir</button>
+    </div>
+  </header>
+
+  <main id="content" class="max-w-3xl mx-auto px-4 pt-5 pb-32"></main>
+
+  <!-- bottom nav -->
+  <nav class="fixed bottom-0 inset-x-0 z-40 flex justify-center pb-[env(safe-area-inset-bottom)]">
+    <div class="glass-strong rounded-t-3xl w-full max-w-3xl flex justify-around py-2 px-2">
+      <div id="nav-train" class="navbtn active" onclick="go('train')"><span class="ic">🏋️</span>Entrenamiento</div>
+      <div id="nav-nutri" class="navbtn" onclick="go('nutri')"><span class="ic">🍎</span>Nutrición</div>
+      <div id="nav-ctrl" class="navbtn" onclick="go('ctrl')"><span class="ic">📊</span>Control</div>
+    </div>
+  </nav>
+</div>
+
+<!-- modal + report host -->
+<div id="modal-root"></div>
+<div id="report-host" style="position:fixed; left:-9999px; top:0;"></div>
+
+<script>
+/* ============================================================
+   zebbetag Fitness — motor local sobre localStorage
+   ============================================================ */
+const DB_KEY = 'zebbetag_db';
+const MUSCLES = ['Espalda','Bíceps','Antebrazo','Pectoral','Hombro','Tríceps','Pierna','Abdomen','Glúteo','Trapecio'];
+const MACHINES = ['Caminadora','Bicicleta','Escaladora','Elíptica','Remo'];
+
+const uid = () => 'id' + Math.random().toString(36).slice(2,9) + Date.now().toString(36).slice(-3);
+const today = () => new Date().toISOString().slice(0,10);
+const fmtDate = d => new Date(d + 'T00:00:00').toLocaleDateString('es-MX',{day:'2-digit',month:'short'});
+const $ = s => document.querySelector(s);
+
+let db = null;
+let charts = {};
+
+function loadDB(){ try{ return JSON.parse(localStorage.getItem(DB_KEY)); }catch(e){ return null; } }
+function saveLocal(){ localStorage.setItem(DB_KEY, JSON.stringify(db)); }
+function saveDB(){ saveLocal(); scheduleCloudPush(); }
+
+/* ---------- Seed / datos mock ---------- */
+function seed(){
+  const u = 'demo';
+  const now = new Date();
+  const dOffset = n => { const x = new Date(now); x.setDate(x.getDate()-n); return x.toISOString().slice(0,10); };
+
+  const exLib = [
+    {id:uid(),userId:u,name:'Jalón al pecho',muscle:'Espalda'},
+    {id:uid(),userId:u,name:'Remo con barra',muscle:'Espalda'},
+    {id:uid(),userId:u,name:'Curl con barra',muscle:'Bíceps'},
+    {id:uid(),userId:u,name:'Press banca',muscle:'Pectoral'},
+    {id:uid(),userId:u,name:'Aperturas',muscle:'Pectoral'},
+    {id:uid(),userId:u,name:'Press militar',muscle:'Hombro'},
+    {id:uid(),userId:u,name:'Extensión tríceps polea',muscle:'Tríceps'},
+    {id:uid(),userId:u,name:'Sentadilla',muscle:'Pierna'},
+    {id:uid(),userId:u,name:'Prensa',muscle:'Pierna'},
+    {id:uid(),userId:u,name:'Plancha',muscle:'Abdomen'},
+  ];
+  const byName = n => exLib.find(e=>e.name===n).name;
+
+  // Las "personas" ahora son cuentas reales (ver return). Sus datos se indexan por id de cuenta: p1, p2, p3.
+  const workouts = [
+    // Persona 1 (Ana)
+    {id:uid(),personaId:'p1',date:dOffset(8),muscles:['Pectoral','Tríceps'],cardio:{on:false},exercises:[
+      {name:'Press banca',weight:60,unit:'kg',sets:4,reps:10},
+      {name:'Aperturas',weight:14,unit:'kg',sets:3,reps:12},
+      {name:'Extensión tríceps polea',weight:25,unit:'kg',sets:4,reps:12}]},
+    {id:uid(),personaId:'p1',date:dOffset(3),muscles:['Pectoral','Tríceps'],cardio:{on:false},exercises:[
+      {name:'Press banca',weight:67.5,unit:'kg',sets:4,reps:10},
+      {name:'Aperturas',weight:16,unit:'kg',sets:3,reps:12},
+      {name:'Extensión tríceps polea',weight:27.5,unit:'kg',sets:4,reps:12}]},
+    {id:uid(),personaId:'p1',date:today(),muscles:['Espalda','Bíceps'],cardio:{on:true,time:15,incline:2,level:6,machine:'Caminadora'},exercises:[
+      {name:'Jalón al pecho',weight:55,unit:'kg',sets:4,reps:12},
+      {name:'Curl con barra',weight:22.5,unit:'kg',sets:3,reps:12}]},
+    // Persona 2 (Beto)
+    {id:uid(),personaId:'p2',date:dOffset(6),muscles:['Pierna'],cardio:{on:false},exercises:[
+      {name:'Sentadilla',weight:70,unit:'kg',sets:4,reps:10},
+      {name:'Prensa',weight:120,unit:'kg',sets:4,reps:12}]},
+    {id:uid(),personaId:'p2',date:dOffset(1),muscles:['Pierna','Abdomen'],cardio:{on:true,time:20,incline:4,level:8,machine:'Escaladora'},exercises:[
+      {name:'Sentadilla',weight:85,unit:'kg',sets:5,reps:8},
+      {name:'Prensa',weight:150,unit:'kg',sets:4,reps:12},
+      {name:'Plancha',weight:0,unit:'kg',sets:3,reps:60}]},
+    // Persona 3 (Caro)
+    {id:uid(),personaId:'p3',date:dOffset(5),muscles:['Espalda','Hombro'],cardio:{on:false},exercises:[
+      {name:'Jalón al pecho',weight:45,unit:'kg',sets:4,reps:12},
+      {name:'Press militar',weight:30,unit:'kg',sets:4,reps:10}]},
+    {id:uid(),personaId:'p3',date:today(),muscles:['Espalda','Hombro'],cardio:{on:false},exercises:[
+      {name:'Jalón al pecho',weight:52.5,unit:'kg',sets:4,reps:11},
+      {name:'Press militar',weight:35,unit:'kg',sets:4,reps:10}]},
+  ];
+
+  const dishes = [
+    {id:uid(),userId:u,name:'Pechuga de pollo',kcal:165,protein:31,carbs:0,fat:3.6,portion:100,unitType:'g'},
+    {id:uid(),userId:u,name:'Arroz blanco cocido',kcal:130,protein:2.7,carbs:28,fat:0.3,portion:100,unitType:'g'},
+    {id:uid(),userId:u,name:'Huevo entero',kcal:78,protein:6.3,carbs:0.6,fat:5.3,portion:1,unitType:'u'},
+    {id:uid(),userId:u,name:'Avena',kcal:389,protein:16.9,carbs:66,fat:6.9,portion:100,unitType:'g'},
+    {id:uid(),userId:u,name:'Whey protein (scoop)',kcal:120,protein:24,carbs:3,fat:1.5,portion:1,unitType:'u'},
+  ];
+
+  const weights = [
+    {id:uid(),personaId:'p1',date:dOffset(21),weight:70.2},
+    {id:uid(),personaId:'p1',date:dOffset(7),weight:69.4},
+    {id:uid(),personaId:'p1',date:dOffset(1),weight:69.0},
+    {id:uid(),personaId:'p2',date:dOffset(21),weight:82.5},
+    {id:uid(),personaId:'p2',date:dOffset(7),weight:81.3},
+    {id:uid(),personaId:'p2',date:dOffset(1),weight:80.6},
+    {id:uid(),personaId:'p3',date:dOffset(14),weight:60.1},
+    {id:uid(),personaId:'p3',date:dOffset(2),weight:60.8},
+  ];
+
+  const goals = {
+    p1:{kcal:2000,protein:150,carbs:210,fat:60},
+    p2:{kcal:2800,protein:190,carbs:300,fat:85},
+    p3:{kcal:1800,protein:130,carbs:190,fat:55},
+  };
+
+  const meals = [
+    {id:uid(),personaId:'p1',date:today(),items:[
+      {dish:'Avena',portion:80,unitType:'g'},
+      {dish:'Whey protein (scoop)',portion:1,unitType:'u'},
+      {dish:'Pechuga de pollo',portion:200,unitType:'g'}]},
+    {id:uid(),personaId:'p2',date:today(),items:[
+      {dish:'Arroz blanco cocido',portion:250,unitType:'g'},
+      {dish:'Pechuga de pollo',portion:250,unitType:'g'}]},
+  ];
+
+  return {
+    users:[
+      {id:u,   name:'Admin', email:'demo@zebbetag.com', pass:'demo', admin:true},
+      {id:'p1',name:'Ana',   email:'ana@zebbetag.com',  pass:'ana',  admin:false},
+      {id:'p2',name:'Beto',  email:'beto@zebbetag.com', pass:'beto', admin:false},
+      {id:'p3',name:'Caro',  email:'caro@zebbetag.com', pass:'caro', admin:false},
+    ],
+    session:{currentUserId:null},
+    exercises:exLib, workouts, dishes, weights, goals, meals
+  };
+}
+
+db = loadDB();
+if(!db){ db = seed(); saveLocal(); }
+migrateDB();
+function migrateDB(){
+  let changed = false;
+  const fresh = seed();
+  // Esquema viejo con db.personas -> convertir a cuentas con rol
+  if(db.personas){ delete db.personas; changed = true; }
+  // Asegurar campo admin y que existan las cuentas base
+  if(db.users){
+    db.users.forEach(u=>{ if(typeof u.admin==='undefined') u.admin = (u.email==='demo@zebbetag.com'); });
+    fresh.users.forEach(fu=>{ if(!db.users.some(u=>u.id===fu.id)){ db.users.push(fu); changed = true; } });
+  } else { db.users = fresh.users; changed = true; }
+  // Remapear datos antiguos (userId) a personaId si hiciera falta
+  (db.workouts||[]).forEach(w=>{ if(!w.personaId){ w.personaId = w.userId || 'p1'; changed = true; } });
+  (db.weights||[]).forEach(w=>{ if(!w.personaId){ w.personaId = w.userId || 'p1'; changed = true; } });
+  (db.meals||[]).forEach(m=>{ if(!m.personaId){ m.personaId = m.userId || 'p1'; changed = true; } });
+  if(db.feed){ delete db.feed; changed = true; }
+  if(changed) saveLocal();
+}
+
+/* ---------- helpers de datos y roles ---------- */
+const CU = () => db.session.currentUserId;
+function curUser(){ return db.users.find(u=>u.id===CU()) || null; }
+function isAdmin(){ const u=curUser(); return !!(u && u.admin); }
+function managed(){ return isAdmin() ? db.users.filter(u=>!u.admin) : (curUser()?[curUser()]:[]); }
+function canEdit(id){ return isAdmin() || id===CU(); }
+
+let activePersona = null;
+function AP(){
+  if(isAdmin()){
+    if(activePersona && managed().some(p=>p.id===activePersona)) return activePersona;
+    return managed()[0] ? managed()[0].id : null;
+  }
+  return CU();
+}
+function personaName(id){ const u=db.users.find(x=>x.id===id); return u ? u.name : '—'; }
+
+const myEx = () => db.exercises;                 // biblioteca de ejercicios (compartida)
+const myDishes = () => db.dishes;                // biblioteca de platillos (compartida)
+const myWorkouts = (pid=AP()) => db.workouts.filter(w=>w.personaId===pid).sort((a,b)=>a.date<b.date?-1:1);
+const myWeights = (pid=AP()) => db.weights.filter(w=>w.personaId===pid).sort((a,b)=>a.date<b.date?-1:1);
+const myGoals = (pid=AP()) => db.goals[pid] || {kcal:2000,protein:150,carbs:220,fat:60};
+const escapeHtml = s => (s+'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+function getTodayWorkout(pid=AP()){
+  let w = db.workouts.find(x=>x.personaId===pid && x.date===today());
+  if(!w){ w = {id:uid(),personaId:pid,date:today(),muscles:[],exercises:[],cardio:{on:false}}; db.workouts.push(w); saveDB(); }
+  return w;
+}
+function getTodayMeal(pid=AP()){
+  let m = db.meals.find(x=>x.personaId===pid && x.date===today());
+  if(!m){ m = {id:uid(),personaId:pid,date:today(),items:[]}; db.meals.push(m); saveDB(); }
+  return m;
+}
+function volume(w){ return w.exercises.reduce((s,e)=>s+(e.weight||0)*(e.sets||0)*(e.reps||0),0); }
+
+/* ---------- Selector de persona (solo administrador) ---------- */
+function personaBar(){
+  if(!isAdmin()) return '';   // los usuarios normales solo se gestionan a sí mismos
+  return `<div class="glass rounded-2xl p-2 mb-4 flex items-center gap-2 overflow-x-auto">
+    <span class="text-xs shrink-0 ml-1 mr-1" style="color:var(--txt-2)">Registrar para:</span>
+    ${managed().map(p=>`<button class="chip shrink-0 ${p.id===AP()?'active':''}" onclick="setPersona('${p.id}')">${escapeHtml(p.name)}</button>`).join('')}
+    <button class="btn-ghost rounded-xl w-9 h-9 flex items-center justify-center ml-auto shrink-0" onclick="openPersonas()" title="Editar nombres">✎</button>
+  </div>`;
+}
+function setPersona(id){
+  if(!isAdmin()) return;
+  activePersona = id;
+  if(section==='train') renderTrain();
+  else if(section==='nutri') renderNutri();
+  else if(section==='ctrl') renderCtrl();
+}
+function openPersonas(){
+  if(!isAdmin()) return;
+  showModal(`
+    <h3 class="text-lg font-bold mb-1">Cuentas gestionadas</h3>
+    <p class="text-xs mb-3" style="color:var(--txt-2)">Nombres de las personas que administras.</p>
+    ${managed().map((p,i)=>`<label class="fld">${escapeHtml(p.email)}</label><input id="pn-${p.id}" value="${escapeHtml(p.name)}" class="mb-2">`).join('')}
+    <button class="btn-accent w-full rounded-2xl py-2.5 mt-1" onclick="savePersonas()">Guardar</button>
+    <button class="btn-ghost w-full rounded-2xl py-2.5 mt-2" onclick="closeModal()">Cancelar</button>
+  `);
+}
+function savePersonas(){
+  managed().forEach(p=>{ const el=document.getElementById('pn-'+p.id); if(el && el.value.trim()) p.name=el.value.trim(); });
+  saveDB(); closeModal(); go(section);
+}
+
+/* ============================================================
+   NUBE: sincronización vía GitHub API + respaldo localStorage
+   ------------------------------------------------------------
+   - Leer feed compartido: solo requiere usuario/repo (raw público).
+   - Escribir: requiere token (fine-grained, solo Contents de ESE repo).
+   - NUNCA se suben contraseñas ni correos al database.json.
+   ============================================================ */
+const CFG_KEY = 'zebbetag_cfg';
+// Config base opcional: si rellenas owner/repo aquí, TODOS los usuarios leen el archivo
+// central automáticamente (solo lectura, sin token). El token de escritura lo pone el admin.
+const DEFAULT_CLOUD = { owner:'', repo:'', branch:'main', path:'database.json' };
+function cfgGet(){ let saved={}; try{ saved = JSON.parse(localStorage.getItem(CFG_KEY)) || {}; }catch(e){} return Object.assign({}, DEFAULT_CLOUD, saved); }
+function cfgSet(c){ localStorage.setItem(CFG_KEY, JSON.stringify(c)); }
+function cloudCanRead(){ const c=cfgGet(); return !!(c.owner && c.repo); }
+function cloudCanWrite(){ const c=cfgGet(); return !!(c.owner && c.repo && c.token); }
+function ghPath(){ return (cfgGet().path || 'database.json'); }
+function ghBranch(){ return (cfgGet().branch || 'main'); }
+
+function b64encode(str){ return btoa(unescape(encodeURIComponent(str))); }
+function b64decode(str){ return decodeURIComponent(escape(atob((str||'').replace(/\n/g,'')))); }
+
+async function ghGetFile(){
+  const c = cfgGet();
+  const url = `https://api.github.com/repos/${c.owner}/${c.repo}/contents/${encodeURIComponent(ghPath())}?ref=${encodeURIComponent(ghBranch())}&t=${Date.now()}`;
+  const headers = { 'Accept':'application/vnd.github+json' };
+  if(c.token) headers['Authorization'] = 'Bearer ' + c.token;
+  const r = await fetch(url, { headers, cache:'no-store' });
+  if(r.status === 404) return { data:null, sha:null };
+  if(!r.ok) throw new Error('GitHub ' + r.status);
+  const j = await r.json();
+  return { data: JSON.parse(b64decode(j.content)), sha: j.sha };
+}
+async function ghRawRead(){
+  const c = cfgGet();
+  const url = `https://raw.githubusercontent.com/${c.owner}/${c.repo}/${ghBranch()}/${ghPath()}?t=${Date.now()}`;
+  const r = await fetch(url, { cache:'no-store' });
+  if(!r.ok) return null;
+  return await r.json();
+}
+async function ghPutFile(obj, sha){
+  const c = cfgGet();
+  const url = `https://api.github.com/repos/${c.owner}/${c.repo}/contents/${encodeURIComponent(ghPath())}`;
+  const body = { message:'zebbetag sync ' + new Date().toISOString(), content: b64encode(JSON.stringify(obj,null,2)), branch: ghBranch() };
+  if(sha) body.sha = sha;
+  const r = await fetch(url, { method:'PUT',
+    headers:{ 'Accept':'application/vnd.github+json','Authorization':'Bearer '+c.token,'Content-Type':'application/json' },
+    body: JSON.stringify(body) });
+  if(!r.ok){ throw new Error('GitHub ' + r.status + ' ' + (await r.text())); }
+  return await r.json();
+}
+
+/* Datos compartibles (sin cuentas/contraseñas; solo datos por persona + bibliotecas) */
+function sharedFromDB(src){
+  return {
+    workouts: src.workouts, exercises: src.exercises,
+    dishes: src.dishes, weights: src.weights, meals: src.meals, goals: src.goals
+  };
+}
+function emptyShared(){ return { workouts:[], exercises:[], dishes:[], weights:[], meals:[], goals:{} }; }
+
+/* Aplicar remoto: lo remoto MANDA en los datos por persona (así lo del admin surte
+   efecto en los usuarios). Las bibliotecas se unen por id para no perder nada. */
+function applyRemote(shared){
+  if(!shared) return;
+  ['workouts','weights','meals'].forEach(k=>{ if(shared[k]) db[k]=shared[k]; });
+  ['exercises','dishes'].forEach(k=>{ if(shared[k]){ const m={}; (db[k]||[]).forEach(x=>m[x.id]=x); shared[k].forEach(x=>m[x.id]=x); db[k]=Object.values(m); } });
+  if(shared.goals) db.goals = Object.assign({}, db.goals, shared.goals);
+  saveLocal();
+}
+
+/* Merge para SUBIR: conservo del remoto lo de personas que NO puedo editar, y subo
+   lo mío editable. Admin puede editar a todos; el usuario solo a sí mismo. */
+function mergeForPush(remote){
+  const base = remote || emptyShared();
+  const perOwner = k => (base[k]||[]).filter(r=>!canEdit(r.personaId)).concat((db[k]||[]).filter(r=>canEdit(r.personaId)));
+  const unionById = k => { const m={}; (base[k]||[]).forEach(x=>m[x.id]=x); (db[k]||[]).forEach(x=>m[x.id]=x); return Object.values(m); };
+  const goals = Object.assign({}, base.goals||{});
+  Object.keys(db.goals||{}).forEach(id=>{ if(canEdit(id)) goals[id]=db.goals[id]; });
+  return { workouts:perOwner('workouts'), weights:perOwner('weights'), meals:perOwner('meals'),
+           exercises:unionById('exercises'), dishes:unionById('dishes'), goals };
+}
+
+let pushTimer=null, pushing=false;
+function scheduleCloudPush(){ if(!cloudCanWrite()) return; clearTimeout(pushTimer); pushTimer=setTimeout(cloudPush, 1500); }
+async function cloudPush(){
+  if(!cloudCanWrite() || pushing) return;
+  pushing = true; setSyncStatus('sync','Sincronizando…');
+  try{
+    let { data:remote, sha } = await ghGetFile();
+    let payload = mergeForPush(remote);
+    try{ await ghPutFile(payload, sha); }
+    catch(e){
+      if((''+e).indexOf('409')>-1 || (''+e).indexOf('422')>-1){ // conflicto: recargar y reintentar
+        const g = await ghGetFile(); payload = mergeForPush(g.data); await ghPutFile(payload, g.sha);
+      } else throw e;
+    }
+    setSyncStatus('ok','En la nube');
+  }catch(e){ console.error(e); setSyncStatus('err','Error de nube · local ok'); }
+  finally{ pushing = false; }
+}
+async function cloudPull(){
+  if(!cloudCanRead()) return false;
+  setSyncStatus('sync','Cargando…');
+  try{
+    const shared = cfgGet().token ? (await ghGetFile()).data : await ghRawRead();
+    applyRemote(shared);
+    setSyncStatus(cloudCanWrite()?'ok':'read', cloudCanWrite()?'En la nube':'Lectura nube');
+    if(document.getElementById('app') && !document.getElementById('app').classList.contains('hide')) go(section);
+    return true;
+  }catch(e){ console.error(e); setSyncStatus('err','Sin conexión · local'); return false; }
+}
+
+function setSyncStatus(state,label){
+  const b = document.getElementById('sync-badge'); if(!b) return;
+  const colors = { ok:'#34C759', read:'#FF9500', sync:'#FF9500', err:'#FF2D55', local:'#A1A1AA' };
+  const dot = b.querySelector('.dot');
+  dot.style.background = colors[state] || '#A1A1AA';
+  dot.classList.toggle('dot-spin', state==='sync');
+  b.querySelector('.lbl').textContent = label;
+  b.classList.remove('hide');
+}
+
+/* ---------- Panel de configuración ---------- */
+function openConfig(){
+  const c = cfgGet();
+  showModal(`
+    <h3 class="text-lg font-bold mb-1">Almacenamiento en la nube</h3>
+    <p class="text-xs mb-3" style="color:var(--txt-2)">Sincroniza el <b>database.json</b> central en tu repositorio de GitHub. Sin configurar, todo queda solo en este navegador.</p>
+    <div class="warn-box mb-4">
+      ⚠️ <b>Seguridad:</b> el token se guarda en <b>este navegador</b> y quien tenga acceso al equipo puede leerlo. Usa un <b>token fine-grained</b> limitado <b>solo a este repo</b> con permiso <b>Contents: Read and write</b>, nunca uno de tu cuenta completa. Si el repo es público, lo que subas será visible para cualquiera. Para <b>leer</b>, tus amigos no necesitan token: basta usuario y repo.
+    </div>
+    <div class="grid grid-cols-2 gap-2 mb-2">
+      <div><label class="fld">Usuario / organización</label><input id="cf-owner" value="${escapeHtml(c.owner||'')}" placeholder="zebbepro"></div>
+      <div><label class="fld">Repositorio</label><input id="cf-repo" value="${escapeHtml(c.repo||'')}" placeholder="zebbetag-fitness"></div>
+      <div><label class="fld">Rama</label><input id="cf-branch" value="${escapeHtml(c.branch||'main')}" placeholder="main"></div>
+      <div><label class="fld">Archivo</label><input id="cf-path" value="${escapeHtml(c.path||'database.json')}" placeholder="database.json"></div>
+    </div>
+    <label class="fld">Token (solo para escribir)</label>
+    <input id="cf-token" type="password" value="${escapeHtml(c.token||'')}" placeholder="github_pat_… (opcional para solo lectura)">
+    <p class="text-xs mt-2" style="color:var(--txt-2)">Este panel es solo para el administrador. Los usuarios leen el archivo central de forma automática (sin token) y solo pueden registrar lo suyo. Lo que registres como admin se refleja en sus cuentas al sincronizar.</p>
+    <p id="cf-status" class="text-xs mt-3 min-h-[1rem]" style="color:var(--txt-2)"></p>
+    <div class="grid grid-cols-2 gap-2 mt-2">
+      <button class="btn-ghost rounded-2xl py-2.5" onclick="testConn()">Probar conexión</button>
+      <button class="btn-ghost rounded-2xl py-2.5" onclick="forceSync()">Sincronizar ahora</button>
+    </div>
+    <button class="btn-accent w-full rounded-2xl py-2.5 mt-2" onclick="saveConfig()">Guardar y conectar</button>
+    <button class="w-full rounded-2xl py-2.5 mt-2 text-sm" style="color:var(--red)" onclick="clearConfig()">Borrar credenciales de este navegador</button>
+    <button class="btn-ghost w-full rounded-2xl py-2.5 mt-2" onclick="closeModal()">Cerrar</button>
+  `);
+}
+function readCfgFields(){
+  cfgSet({
+    owner:$('#cf-owner').value.trim(), repo:$('#cf-repo').value.trim(),
+    branch:$('#cf-branch').value.trim()||'main', path:$('#cf-path').value.trim()||'database.json',
+    token:$('#cf-token').value.trim()
+  });
+}
+function saveConfig(){
+  readCfgFields(); closeModal();
+  if(!cloudCanRead()){ setSyncStatus('local','Solo local'); return; }
+  if(cloudCanWrite()) cloudPush().then(()=>cloudPull());
+  else cloudPull();
+}
+async function testConn(){
+  const s = $('#cf-status'); s.style.color='var(--txt-2)'; s.textContent='Probando…';
+  readCfgFields();
+  if(!cloudCanRead()){ s.style.color='var(--red)'; s.textContent='Falta usuario y/o repositorio.'; return; }
+  try{
+    const r = await ghGetFile();
+    s.style.color='#34C759';
+    s.textContent = r.data
+      ? `Conexión OK · database.json encontrado (${(r.data.workouts||[]).length} entrenamientos)`
+      : 'Conexión OK · se creará database.json al sincronizar';
+  }catch(e){ s.style.color='var(--red)'; s.textContent = 'Falló: ' + (''+e).replace('Error: ',''); }
+}
+function forceSync(){
+  readCfgFields();
+  if(!cloudCanRead()){ const s=$('#cf-status'); if(s){s.style.color='var(--red)';s.textContent='Falta usuario/repositorio.';} return; }
+  const s=$('#cf-status'); if(s){ s.style.color='var(--txt-2)'; s.textContent='Sincronizando…'; }
+  // Escritores: subir primero (merge preserva lo mío) y luego bajar lo de los demás.
+  const seq = cloudCanWrite() ? cloudPush().then(()=>cloudPull()) : cloudPull();
+  seq.then(()=>{ const x=$('#cf-status'); if(x){x.style.color='#34C759';x.textContent='Sincronizado.';} });
+}
+function clearConfig(){ localStorage.removeItem(CFG_KEY); closeModal(); setSyncStatus('local','Solo local'); }
+
+/* ============================================================
+   AUTH
+   ============================================================ */
+let authMode = 'login';
+function setAuthMode(m){
+  authMode = m;
+  $('#tab-login').classList.toggle('active', m==='login');
+  $('#tab-reg').classList.toggle('active', m==='register');
+  $('#reg-name-wrap').classList.toggle('hide', m!=='register');
+  $('#a-submit').textContent = m==='login' ? 'Entrar' : 'Crear cuenta';
+  $('#a-err').classList.add('hide');
+}
+function authErr(msg){ const e=$('#a-err'); e.textContent=msg; e.classList.remove('hide'); }
+
+function submitAuth(){
+  const email = $('#a-email').value.trim().toLowerCase();
+  const pass = $('#a-pass').value;
+  if(!email || !pass){ return authErr('Completa correo y contraseña.'); }
+
+  if(authMode==='register'){
+    const name = $('#a-name').value.trim();
+    if(!name) return authErr('Ingresa tu nombre.');
+    if(db.users.some(u=>u.email===email)) return authErr('Ese correo ya está registrado.');
+    const id = uid();
+    db.users.push({id,name,email,pass,admin:false});
+    db.goals[id] = {kcal:2000,protein:150,carbs:220,fat:60};
+    db.session.currentUserId = id; saveDB(); enterApp();
+  } else {
+    const u = db.users.find(x=>x.email===email && x.pass===pass);
+    if(!u) return authErr('Credenciales incorrectas.');
+    db.session.currentUserId = u.id; saveDB(); enterApp();
+  }
+}
+function logout(){ db.session.currentUserId=null; saveDB(); location.reload(); }
+
+function enterApp(){
+  const u = curUser();
+  activePersona = isAdmin() ? (managed()[0] ? managed()[0].id : null) : CU();
+  if(!isAdmin() && trainTab==='friends') trainTab='today';
+  $('#auth').classList.add('hide');
+  $('#app').classList.remove('hide');
+  $('#who').textContent = (isAdmin()?'Admin · ':'') + u.name;
+  document.getElementById('cfg-btn').classList.toggle('hide', !isAdmin());  // config de nube solo para admin
+  go('train');
+  if(cloudCanRead()){ setSyncStatus('sync','Conectando…'); cloudPull(); }
+  else setSyncStatus('local','Solo local');
+}
+
+/* ============================================================
+   ROUTER
+   ============================================================ */
+let section = 'train';
+let trainTab = 'today';
+function go(s){
+  section = s;
+  ['train','nutri','ctrl'].forEach(x=> $('#nav-'+x).classList.toggle('active', x===s));
+  destroyCharts();
+  if(s==='train') renderTrain();
+  if(s==='nutri') renderNutri();
+  if(s==='ctrl') renderCtrl();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function destroyCharts(){ Object.values(charts).forEach(c=>{ try{c.destroy();}catch(e){} }); charts={}; }
+
+/* ============================================================
+   SECCIÓN: ENTRENAMIENTO
+   ============================================================ */
+function renderTrain(){
+  if(!isAdmin() && trainTab==='friends') trainTab='today';
+  const teamTab = isAdmin() ? `<div class="tab ${trainTab==='friends'?'active':''}" onclick="setTrainTab('friends')">Equipo</div>` : '';
+  $('#content').innerHTML = `
+    <div class="fade">
+      <div class="flex gap-6 mb-5 border-b border-white/10">
+        <div class="tab ${trainTab==='today'?'active':''}" onclick="setTrainTab('today')">Rutina</div>
+        ${teamTab}
+        <div class="tab ${trainTab==='personal'?'active':''}" onclick="setTrainTab('personal')">Personal</div>
+      </div>
+      <div id="train-body"></div>
+    </div>`;
+  if(trainTab==='today') renderToday();
+  if(trainTab==='friends' && isAdmin()) renderTeam();
+  if(trainTab==='personal') renderPersonal();
+}
+function setTrainTab(t){ trainTab=t; renderTrain(); }
+
+/* ----- Mi rutina del día ----- */
+function renderToday(){
+  const w = getTodayWorkout();
+  const musclesChips = MUSCLES.map(m=>{
+    const on = w.muscles.includes(m);
+    const disabled = !on && w.muscles.length>=3;
+    return `<span class="chip ${on?'active':''}" style="${disabled?'opacity:.4;pointer-events:none':''}" onclick="toggleMuscle('${m}')">${m}</span>`;
+  }).join('');
+
+  const exRows = w.exercises.map((e,i)=>`
+    <div class="glass rounded-2xl p-3 flex items-center justify-between">
+      <div>
+        <div class="font-semibold">${escapeHtml(e.name)}</div>
+        <div class="text-xs" style="color:var(--txt-2)">${e.weight} ${e.unit} · ${e.sets} series · ${e.reps} reps</div>
+      </div>
+      <button class="btn-ghost rounded-xl w-9 h-9 flex items-center justify-center" onclick="removeEx(${i})">✕</button>
+    </div>`).join('') || `<p class="text-sm text-center py-4" style="color:var(--txt-2)">Aún no agregas ejercicios hoy.</p>`;
+
+  const c = w.cardio || {on:false};
+  const cardioForm = c.on ? `
+    <div class="grid grid-cols-2 gap-3 mt-3">
+      <div><label class="fld">Tiempo (min)</label><input type="number" value="${c.time||''}" onchange="cardioSet('time',this.value)"></div>
+      <div><label class="fld">Máquina</label><select onchange="cardioSet('machine',this.value)">${MACHINES.map(m=>`<option ${c.machine===m?'selected':''}>${m}</option>`).join('')}</select></div>
+      <div><label class="fld">Inclinación</label><input type="number" value="${c.incline||''}" onchange="cardioSet('incline',this.value)"></div>
+      <div><label class="fld">Nivel</label><input type="number" value="${c.level||''}" onchange="cardioSet('level',this.value)"></div>
+    </div>` : '';
+
+  $('#train-body').innerHTML = `
+    ${personaBar()}
+    <div class="glass-strong rounded-3xl p-5 fade">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <div class="text-xs uppercase tracking-wide" style="color:var(--txt-2)">Rutina de ${escapeHtml(personaName(AP()))}</div>
+          <div class="text-xl font-bold">${new Date().toLocaleDateString('es-MX',{weekday:'long',day:'2-digit',month:'long'})}</div>
+        </div>
+        <button class="btn-ghost rounded-xl px-3 py-2 text-sm" onclick="confirmDeleteToday()">🗑 Eliminar</button>
+      </div>
+
+      <label class="fld">Grupos musculares (máx. 3)</label>
+      <div class="flex flex-wrap gap-2 mb-5">${musclesChips}</div>
+
+      <div class="flex items-center justify-between mb-2">
+        <label class="fld" style="margin:0">Ejercicios</label>
+        <button class="btn-accent rounded-xl px-3 py-1.5 text-sm" onclick="openAddExercise()">+ Agregar</button>
+      </div>
+      <div class="space-y-2 mb-5">${exRows}</div>
+
+      <div class="glass rounded-2xl p-3">
+        <label class="flex items-center justify-between cursor-pointer">
+          <span class="font-semibold">🏃 Cardio</span>
+          <input type="checkbox" ${c.on?'checked':''} onchange="cardioToggle(this.checked)" style="width:auto">
+        </label>
+        ${cardioForm}
+      </div>
+
+      <div class="mt-5 flex items-center justify-between text-sm" style="color:var(--txt-2)">
+        <span>Volumen total</span>
+        <span class="grad-text font-bold text-base">${volume(w).toLocaleString('es-MX')} kg</span>
+      </div>
+    </div>`;
+}
+function toggleMuscle(m){
+  const w = getTodayWorkout();
+  if(w.muscles.includes(m)) w.muscles = w.muscles.filter(x=>x!==m);
+  else { if(w.muscles.length>=3) return; w.muscles.push(m); }
+  saveDB(); renderToday();
+}
+function removeEx(i){ const w=getTodayWorkout(); w.exercises.splice(i,1); saveDB(); renderToday(); }
+function cardioToggle(on){ const w=getTodayWorkout(); w.cardio=on?{on:true,time:'',incline:'',level:'',machine:MACHINES[0]}:{on:false}; saveDB(); renderToday(); }
+function cardioSet(k,v){ const w=getTodayWorkout(); w.cardio[k]= (k==='machine'?v:Number(v)); saveDB(); }
+
+function confirmDeleteToday(){
+  showModal(`
+    <div class="text-center">
+      <div class="text-4xl mb-3">🗑</div>
+      <h3 class="text-lg font-bold mb-1">¿Estás seguro de eliminar esta carta?</h3>
+      <p class="text-sm mb-5" style="color:var(--txt-2)">Se borrará todo el registro de hoy.</p>
+      <div class="flex gap-3">
+        <button class="btn-ghost rounded-2xl flex-1 py-2.5" onclick="closeModal()">Cancelar</button>
+        <button class="btn-accent rounded-2xl flex-1 py-2.5" onclick="doDeleteToday()">Eliminar</button>
+      </div>
+    </div>`);
+}
+function doDeleteToday(){
+  db.workouts = db.workouts.filter(w=>!(w.personaId===AP() && w.date===today()));
+  saveDB(); closeModal(); renderToday();
+}
+
+/* ----- Agregar ejercicio (lista + crear) ----- */
+function openAddExercise(){
+  showModal(`
+    <h3 class="text-lg font-bold mb-3">Agregar ejercicio</h3>
+    <input id="ex-search" placeholder="Buscar en mi biblioteca…" oninput="filterExList(this.value)">
+    <div id="ex-list" class="space-y-2 my-3 max-h-52 overflow-y-auto"></div>
+    <div class="border-t border-white/10 pt-4">
+      <div class="text-sm font-semibold mb-2">Crear nuevo ejercicio</div>
+      <input id="ne-name" placeholder="Nombre del ejercicio" class="mb-2">
+      <div class="grid grid-cols-2 gap-2 mb-2">
+        <select id="ne-muscle">${MUSCLES.map(m=>`<option>${m}</option>`).join('')}</select>
+        <select id="ne-unit"><option value="kg">kg</option><option value="lb">lb</option></select>
+        <input id="ne-weight" type="number" placeholder="Peso">
+        <input id="ne-sets" type="number" placeholder="Series">
+        <input id="ne-reps" type="number" placeholder="Reps" class="col-span-2">
+      </div>
+      <button class="btn-accent w-full rounded-2xl py-2.5" onclick="createAndAddExercise()">Crear y agregar</button>
+    </div>
+    <button class="btn-ghost w-full rounded-2xl py-2.5 mt-3" onclick="closeModal()">Cerrar</button>
+  `);
+  filterExList('');
+}
+function filterExList(q){
+  q = (q||'').toLowerCase();
+  const list = myEx().filter(e=>e.name.toLowerCase().includes(q));
+  $('#ex-list').innerHTML = list.length ? list.map(e=>`
+    <div class="glass rounded-xl p-2.5 flex items-center justify-between">
+      <div><div class="text-sm font-medium">${escapeHtml(e.name)}</div><div class="text-xs" style="color:var(--txt-2)">${e.muscle}</div></div>
+      <button class="btn-ghost rounded-lg px-2.5 py-1 text-sm" onclick="pickExercise('${e.id}')">Usar</button>
+    </div>`).join('') : `<p class="text-xs text-center py-3" style="color:var(--txt-2)">Sin resultados. Crea uno nuevo abajo.</p>`;
+}
+let _pick = null;
+function pickExercise(id){
+  const e = db.exercises.find(x=>x.id===id);
+  _pick = {name:e.name, muscle:e.muscle};
+  showExerciseDetail();
+}
+function showExerciseDetail(){
+  showModal(`
+    <h3 class="text-lg font-bold mb-1">${escapeHtml(_pick.name)}</h3>
+    <p class="text-xs mb-3" style="color:var(--txt-2)">${_pick.muscle}</p>
+    <div class="grid grid-cols-2 gap-2 mb-3">
+      <div><label class="fld">Peso</label><input id="pk-weight" type="number" placeholder="0"></div>
+      <div><label class="fld">Unidad</label><select id="pk-unit"><option value="kg">kg</option><option value="lb">lb</option></select></div>
+      <div><label class="fld">Series</label><input id="pk-sets" type="number" placeholder="0"></div>
+      <div><label class="fld">Reps</label><input id="pk-reps" type="number" placeholder="0"></div>
+    </div>
+    <button class="btn-accent w-full rounded-2xl py-2.5" onclick="confirmPick()">Agregar a hoy</button>
+    <button class="btn-ghost w-full rounded-2xl py-2.5 mt-2" onclick="openAddExercise()">← Volver</button>
+  `);
+}
+function confirmPick(){
+  const w = getTodayWorkout();
+  w.exercises.push({
+    name:_pick.name, weight:Number($('#pk-weight').value)||0, unit:$('#pk-unit').value,
+    sets:Number($('#pk-sets').value)||0, reps:Number($('#pk-reps').value)||0
+  });
+  saveDB(); closeModal(); renderToday();
+}
+function createAndAddExercise(){
+  const name = $('#ne-name').value.trim(); if(!name) return;
+  const muscle = $('#ne-muscle').value;
+  db.exercises.push({id:uid(),userId:CU(),name,muscle});
+  const w = getTodayWorkout();
+  w.exercises.push({name, weight:Number($('#ne-weight').value)||0, unit:$('#ne-unit').value, sets:Number($('#ne-sets').value)||0, reps:Number($('#ne-reps').value)||0});
+  saveDB(); closeModal(); renderToday();
+}
+
+/* ----- Equipo: las 3 personas ----- */
+function personaExComparison(pid){
+  const ws = db.workouts.filter(w=>w.personaId===pid).sort((a,b)=>a.date<b.date?-1:1);
+  const map = {};
+  ws.forEach(w=> w.exercises.forEach(e=>{ (map[e.name]=map[e.name]||[]).push({date:w.date,e,muscles:w.muscles}); }));
+  return Object.entries(map).map(([name,arr])=>{
+    arr.sort((a,b)=>a.date<b.date?-1:1);
+    const cur=arr[arr.length-1].e, prev=arr.length>1?arr[arr.length-2].e:null;
+    return { name, prev:prev?{w:prev.weight,s:prev.sets,r:prev.reps}:null, cur:{w:cur.weight,s:cur.sets,r:cur.reps} };
+  });
+}
+function renderTeam(){
+  const cards = managed().map(p=>{
+    const wToday = db.workouts.find(x=>x.personaId===p.id && x.date===today());
+    const cmp = personaExComparison(p.id);
+    const rows = cmp.length ? cmp.map(x=>{
+      const prevVol = x.prev? x.prev.w*x.prev.s*x.prev.r : 0;
+      const up = x.cur.w*x.cur.s*x.cur.r >= prevVol;
+      return `
+      <div class="glass rounded-2xl p-3">
+        <div class="text-sm font-semibold mb-2">${escapeHtml(x.name)}</div>
+        <div class="grid grid-cols-2 gap-3 text-center">
+          <div class="rounded-xl py-2" style="background:rgba(255,255,255,.04)">
+            <div class="text-[10px] uppercase" style="color:var(--txt-2)">Anterior</div>
+            <div class="font-bold">${x.prev? x.prev.w+' kg' : '—'}</div>
+            <div class="text-xs" style="color:var(--txt-2)">${x.prev? x.prev.s+'×'+x.prev.r : 'primera vez'}</div>
+          </div>
+          <div class="rounded-xl py-2" style="background:linear-gradient(135deg,rgba(255,45,85,.18),rgba(255,149,0,.18))">
+            <div class="text-[10px] uppercase" style="color:var(--txt-2)">Actual ${up?'▲':'▼'}</div>
+            <div class="font-bold grad-text">${x.cur.w} kg</div>
+            <div class="text-xs" style="color:var(--txt-2)">${x.cur.s}×${x.cur.r}</div>
+          </div>
+        </div>
+      </div>`;
+    }).join('') : `<p class="text-sm text-center py-3" style="color:var(--txt-2)">Sin registros todavía.</p>`;
+    const todayChips = wToday && wToday.muscles.length
+      ? wToday.muscles.map(m=>`<span class="chip active text-xs">${m}</span>`).join('')
+      : `<span class="text-xs" style="color:var(--txt-2)">Sin rutina hoy</span>`;
+    return `
+      <div class="glass-strong rounded-3xl p-4 mb-4">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="grad w-10 h-10 rounded-full flex items-center justify-center font-bold">${escapeHtml(p.name[0]||'?')}</div>
+          <div class="flex-1"><div class="font-semibold">${escapeHtml(p.name)}</div><div class="flex gap-1 flex-wrap mt-0.5">${todayChips}</div></div>
+        </div>
+        <div class="space-y-2 mb-3">${rows}</div>
+        <div class="grid grid-cols-2 gap-2">
+          <button class="btn-ghost rounded-2xl py-2.5 text-sm" onclick="exportPersonaStatsPDF('${p.id}')">⬇ Estadísticas</button>
+          <button class="btn-accent rounded-2xl py-2.5 text-sm" onclick="exportPersonaDayPDF('${p.id}','${today()}')">⬇ Rutina de hoy</button>
+        </div>
+      </div>`;
+  }).join('');
+  $('#train-body').innerHTML = `<div class="fade"><p class="text-sm mb-4" style="color:var(--txt-2)">Registros de las 3 personas — anterior vs. actual, con descargas por persona.</p>${cards}</div>`;
+}
+
+/* ----- Personal (histórico + PDF) ----- */
+function renderPersonal(){
+  const ws = myWorkouts().slice().reverse();
+  const muscleSet = [...new Set(myWorkouts().flatMap(w=>w.muscles))];
+  const pid = AP();
+  const hist = ws.length ? ws.map(w=>`
+    <div class="glass rounded-2xl p-4 mb-3">
+      <div class="flex items-center justify-between mb-2">
+        <div class="font-semibold">${fmtDate(w.date)}</div>
+        <div class="flex items-center gap-2">
+          <div class="flex gap-1 flex-wrap justify-end">${w.muscles.map(m=>`<span class="chip active text-xs">${m}</span>`).join('')}</div>
+          <button class="btn-ghost rounded-lg px-2 py-1 text-xs shrink-0" onclick="exportPersonaDayPDF('${pid}','${w.date}')" title="Descargar rutina de este día">⬇</button>
+        </div>
+      </div>
+      ${w.exercises.map(e=>`<div class="flex justify-between text-sm py-0.5"><span>${escapeHtml(e.name)}</span><span style="color:var(--txt-2)">${e.weight}${e.unit} · ${e.sets}×${e.reps}</span></div>`).join('')}
+      ${w.cardio&&w.cardio.on?`<div class="text-xs mt-2 pt-2 border-t border-white/10" style="color:var(--txt-2)">🏃 ${w.cardio.machine} · ${w.cardio.time}min · incl ${w.cardio.incline} · niv ${w.cardio.level}</div>`:''}
+    </div>`).join('') : `<p class="text-sm text-center py-6" style="color:var(--txt-2)">Sin entrenamientos registrados.</p>`;
+
+  $('#train-body').innerHTML = `
+    <div class="fade">
+      ${personaBar()}
+      <div class="glass-strong rounded-3xl p-4 mb-4">
+        <div class="text-sm font-semibold mb-3">Descargas de ${escapeHtml(personaName(pid))}</div>
+        <button class="btn-accent w-full rounded-2xl py-2.5 mb-3" onclick="exportPersonaStatsPDF('${pid}')">⬇ Estadísticas completas (PDF)</button>
+        <div class="text-xs mb-2" style="color:var(--txt-2)">Comparativa por grupo muscular:</div>
+        <div class="flex gap-2">
+          <select id="pdf-muscle" class="flex-1">${muscleSet.length?muscleSet.map(m=>`<option>${m}</option>`).join(''):'<option>—</option>'}</select>
+          <button class="btn-ghost rounded-2xl px-4" onclick="exportMusclePDF()">⬇ PDF</button>
+        </div>
+      </div>
+      <h3 class="font-bold mb-3 px-1">Histórico · toca ⬇ para la rutina de ese día</h3>
+      ${hist}
+    </div>`;
+}
+
+/* comparación anterior vs actual por ejercicio dentro de un grupo (persona activa) */
+function compareByMuscle(muscle, pid=AP()){
+  const ws = db.workouts.filter(w=>w.personaId===pid && w.muscles.includes(muscle));
+  const map = {};
+  ws.forEach(w=> w.exercises.forEach(e=>{
+    (map[e.name] = map[e.name]||[]).push({date:w.date, e});
+  }));
+  return Object.entries(map).map(([name, arr])=>{
+    arr.sort((a,b)=>a.date<b.date?-1:1);
+    const cur = arr[arr.length-1].e;
+    const prev = arr.length>1 ? arr[arr.length-2].e : null;
+    return {name, prev, cur};
+  });
+}
+
+/* ============================================================
+   SECCIÓN: NUTRICIÓN
+   ============================================================ */
+function macrosOfMeal(m){
+  const t={kcal:0,protein:0,carbs:0,fat:0};
+  m.items.forEach(it=>{
+    const d = myDishes().find(x=>x.name===it.dish); if(!d) return;
+    const factor = d.unitType==='g' ? it.portion/100 : it.portion/(d.portion||1);
+    t.kcal+=d.kcal*factor; t.protein+=d.protein*factor; t.carbs+=d.carbs*factor; t.fat+=d.fat*factor;
+  });
+  Object.keys(t).forEach(k=>t[k]=Math.round(t[k]*10)/10);
+  return t;
+}
+function renderNutri(){
+  const g = myGoals();
+  const m = getTodayMeal();
+  const tot = macrosOfMeal(m);
+  const macro = (label,val,goal,unit)=>{
+    const over = val>goal;
+    const pct = goal? Math.min(100, Math.round(val/goal*100)) : 0;
+    return `
+      <div class="glass rounded-2xl p-3">
+        <div class="flex justify-between items-baseline mb-1">
+          <span class="text-xs uppercase" style="color:var(--txt-2)">${label}</span>
+          <span class="font-bold ${over?'over':''}">${val}<span class="text-xs" style="color:var(--txt-2)">/${goal}${unit}</span></span>
+        </div>
+        <div class="prog-track"><div class="prog-fill" style="width:${pct}%; ${over?'background:linear-gradient(90deg,#FF2D55,#FF2D55)':''}"></div></div>
+      </div>`;
+  };
+  const items = m.items.map((it,i)=>{
+    const d = myDishes().find(x=>x.name===it.dish);
+    const mm = d ? macrosOfMeal({items:[it]}) : {kcal:0};
+    return `<div class="glass rounded-xl p-2.5 flex items-center justify-between">
+      <div><div class="text-sm font-medium">${escapeHtml(it.dish)}</div><div class="text-xs" style="color:var(--txt-2)">${it.portion}${it.unitType==='g'?' g':' u'} · ${mm.kcal} kcal</div></div>
+      <button class="btn-ghost rounded-lg w-8 h-8" onclick="removeMealItem(${i})">✕</button>
+    </div>`;
+  }).join('') || `<p class="text-sm text-center py-3" style="color:var(--txt-2)">Sin platillos aún. Añade lo que consumas hoy.</p>`;
+
+  $('#content').innerHTML = `
+    <div class="fade">
+      ${personaBar()}
+      <div class="glass-strong rounded-3xl p-5 mb-4">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-bold">Requerimientos · ${escapeHtml(personaName(AP()))}</h3>
+          <button class="btn-ghost rounded-xl px-3 py-1.5 text-sm" onclick="openGoals()">Editar</button>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          ${macro('Calorías',tot.kcal,g.kcal,' kcal')}
+          ${macro('Proteína',tot.protein,g.protein,' g')}
+          ${macro('Carbohidratos',tot.carbs,g.carbs,' g')}
+          ${macro('Grasas',tot.fat,g.fat,' g')}
+        </div>
+      </div>
+
+      <div class="glass-strong rounded-3xl p-5 mb-4">
+        <div class="flex items-center justify-between mb-3">
+          <div><div class="text-xs uppercase" style="color:var(--txt-2)">Tarjeta de consumo · hoy</div><h3 class="font-bold">Comidas del día</h3></div>
+          <button class="btn-accent rounded-xl px-3 py-1.5 text-sm" onclick="openAddMealItem()">+ Platillo</button>
+        </div>
+        <div class="space-y-2">${items}</div>
+      </div>
+
+      <button class="btn-ghost w-full rounded-2xl py-3" onclick="openDishRegistry()">📋 Registro de platillos predeterminados</button>
+    </div>`;
+}
+function removeMealItem(i){ const m=getTodayMeal(); m.items.splice(i,1); saveDB(); renderNutri(); }
+
+function openGoals(){
+  const g = myGoals();
+  showModal(`
+    <h3 class="text-lg font-bold mb-3">Metas diarias</h3>
+    <div class="grid grid-cols-2 gap-3 mb-4">
+      <div><label class="fld">Calorías (kcal)</label><input id="g-kcal" type="number" value="${g.kcal}"></div>
+      <div><label class="fld">Proteína (g)</label><input id="g-prot" type="number" value="${g.protein}"></div>
+      <div><label class="fld">Carbos (g)</label><input id="g-carb" type="number" value="${g.carbs}"></div>
+      <div><label class="fld">Grasas (g)</label><input id="g-fat" type="number" value="${g.fat}"></div>
+    </div>
+    <button class="btn-accent w-full rounded-2xl py-2.5" onclick="saveGoals()">Guardar</button>
+    <button class="btn-ghost w-full rounded-2xl py-2.5 mt-2" onclick="closeModal()">Cancelar</button>
+  `);
+}
+function saveGoals(){
+  db.goals[AP()] = {
+    kcal:Number($('#g-kcal').value)||0, protein:Number($('#g-prot').value)||0,
+    carbs:Number($('#g-carb').value)||0, fat:Number($('#g-fat').value)||0
+  };
+  saveDB(); closeModal(); renderNutri();
+}
+
+function openDishRegistry(){
+  const list = myDishes().map(d=>`
+    <div class="glass rounded-xl p-2.5 flex items-center justify-between">
+      <div><div class="text-sm font-medium">${escapeHtml(d.name)}</div>
+        <div class="text-xs" style="color:var(--txt-2)">${d.kcal}kcal · P${d.protein} C${d.carbs} G${d.fat} · ${d.portion}${d.unitType==='g'?'g':'u'}</div></div>
+      <button class="btn-ghost rounded-lg w-8 h-8" onclick="deleteDish('${d.id}')">✕</button>
+    </div>`).join('') || `<p class="text-xs text-center py-2" style="color:var(--txt-2)">Sin platillos guardados.</p>`;
+  showModal(`
+    <h3 class="text-lg font-bold mb-3">Registro de platillos</h3>
+    <div class="space-y-2 mb-4 max-h-44 overflow-y-auto">${list}</div>
+    <div class="border-t border-white/10 pt-4">
+      <div class="text-sm font-semibold mb-2">Nuevo platillo</div>
+      <input id="d-name" placeholder="Nombre" class="mb-2">
+      <div class="grid grid-cols-2 gap-2 mb-2">
+        <input id="d-kcal" type="number" placeholder="Calorías">
+        <input id="d-prot" type="number" placeholder="Proteína (g)">
+        <input id="d-carb" type="number" placeholder="Carbos (g)">
+        <input id="d-fat" type="number" placeholder="Grasas (g)">
+        <input id="d-portion" type="number" placeholder="Porción def.">
+        <select id="d-unit"><option value="g">Gramos</option><option value="u">Unidades</option></select>
+      </div>
+      <button class="btn-accent w-full rounded-2xl py-2.5" onclick="saveDish()">Guardar platillo</button>
+    </div>
+    <button class="btn-ghost w-full rounded-2xl py-2.5 mt-3" onclick="closeModal()">Cerrar</button>
+  `);
+}
+function saveDish(){
+  const name=$('#d-name').value.trim(); if(!name) return;
+  db.dishes.push({id:uid(),userId:CU(),name,
+    kcal:Number($('#d-kcal').value)||0, protein:Number($('#d-prot').value)||0,
+    carbs:Number($('#d-carb').value)||0, fat:Number($('#d-fat').value)||0,
+    portion:Number($('#d-portion').value)||100, unitType:$('#d-unit').value});
+  saveDB(); openDishRegistry();
+}
+function deleteDish(id){ db.dishes = db.dishes.filter(d=>d.id!==id); saveDB(); openDishRegistry(); }
+
+function openAddMealItem(){
+  const opts = myDishes().map(d=>`<option value="${escapeHtml(d.name)}" data-unit="${d.unitType}" data-portion="${d.portion}">${escapeHtml(d.name)}</option>`).join('');
+  if(!myDishes().length){ return openDishRegistry(); }
+  showModal(`
+    <h3 class="text-lg font-bold mb-3">Añadir consumo</h3>
+    <label class="fld">Platillo</label>
+    <select id="mi-dish" onchange="syncMealUnit()">${opts}</select>
+    <div class="grid grid-cols-2 gap-2 mt-3">
+      <div><label class="fld">Porción</label><input id="mi-portion" type="number" placeholder="0"></div>
+      <div><label class="fld">Tipo</label><input id="mi-unit" disabled></div>
+    </div>
+    <button class="btn-accent w-full rounded-2xl py-2.5 mt-4" onclick="addMealItem()">Agregar</button>
+    <button class="btn-ghost w-full rounded-2xl py-2.5 mt-2" onclick="closeModal()">Cancelar</button>
+  `);
+  syncMealUnit();
+}
+function syncMealUnit(){
+  const sel=$('#mi-dish'); const o=sel.options[sel.selectedIndex];
+  const unit=o.dataset.unit;
+  $('#mi-unit').value = unit==='g'?'Gramos':'Unidades';
+  $('#mi-portion').placeholder = unit==='g'?'gramos':'unidades';
+}
+function addMealItem(){
+  const sel=$('#mi-dish'); const o=sel.options[sel.selectedIndex];
+  const m=getTodayMeal();
+  m.items.push({dish:o.value, portion:Number($('#mi-portion').value)||0, unitType:o.dataset.unit});
+  saveDB(); closeModal(); renderNutri();
+}
+
+/* ============================================================
+   SECCIÓN: CONTROL PERSONAL (Dashboard)
+   ============================================================ */
+function renderCtrl(){
+  const ws = myWeights();
+  const last = ws.length ? ws[ws.length-1].weight : '—';
+  $('#content').innerHTML = `
+    <div class="fade">
+      ${personaBar()}
+      <div class="glass-strong rounded-3xl p-5 mb-4">
+        <div class="flex items-center justify-between">
+          <div><div class="text-xs uppercase" style="color:var(--txt-2)">Peso actual · ${escapeHtml(personaName(AP()))}</div><div class="text-3xl font-bold grad-text">${last}<span class="text-lg"> kg</span></div></div>
+          <button class="btn-accent rounded-2xl px-4 py-2.5" onclick="openWeight()">+ Registrar peso</button>
+        </div>
+      </div>
+
+      <div class="glass-strong rounded-3xl p-5 mb-4">
+        <h3 class="font-bold mb-3">Evolución de peso corporal</h3>
+        <div class="chart-box"><canvas id="c-weight"></canvas></div>
+      </div>
+      <div class="glass-strong rounded-3xl p-5 mb-4">
+        <h3 class="font-bold mb-3">Progreso de volumen (kg movidos)</h3>
+        <div class="chart-box"><canvas id="c-vol"></canvas></div>
+      </div>
+      <div class="glass-strong rounded-3xl p-5 mb-4">
+        <h3 class="font-bold mb-3">Adherencia nutricional · hoy</h3>
+        <div class="chart-box"><canvas id="c-nutri"></canvas></div>
+      </div>
+
+      <button class="btn-accent w-full rounded-2xl py-3.5 text-base" onclick="exportPersonaStatsPDF(AP())">⬇ Descargar estadísticas de ${escapeHtml(personaName(AP()))} (PDF)</button>
+    </div>`;
+  drawCharts();
+}
+function openWeight(){
+  showModal(`
+    <h3 class="text-lg font-bold mb-3">Registrar peso</h3>
+    <div class="grid grid-cols-2 gap-2 mb-4">
+      <div><label class="fld">Peso (kg)</label><input id="w-val" type="number" step="0.1" placeholder="0.0"></div>
+      <div><label class="fld">Fecha</label><input id="w-date" type="date" value="${today()}"></div>
+    </div>
+    <button class="btn-accent w-full rounded-2xl py-2.5" onclick="saveWeight()">Guardar</button>
+    <button class="btn-ghost w-full rounded-2xl py-2.5 mt-2" onclick="closeModal()">Cancelar</button>
+  `);
+}
+function saveWeight(){
+  const val=Number($('#w-val').value); const d=$('#w-date').value;
+  if(!val||!d) return;
+  const ex = db.weights.find(x=>x.personaId===AP() && x.date===d);
+  if(ex) ex.weight=val; else db.weights.push({id:uid(),personaId:AP(),date:d,weight:val});
+  saveDB(); closeModal(); renderCtrl();
+}
+
+const CH = {
+  grid:'rgba(255,255,255,.08)', tick:'#A1A1AA',
+  red:'#FF2D55', orange:'#FF9500'
+};
+function gradient(ctx,area,c1,c2){
+  const g=ctx.createLinearGradient(0,area.top,0,area.bottom);
+  g.addColorStop(0,c1); g.addColorStop(1,c2); return g;
+}
+function baseOpts(extra={}){
+  return Object.assign({
+    responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{ labels:{ color:CH.tick } } },
+    scales:{
+      x:{ grid:{ color:CH.grid }, ticks:{ color:CH.tick } },
+      y:{ grid:{ color:CH.grid }, ticks:{ color:CH.tick } }
+    }
+  }, extra);
+}
+function drawCharts(){
+  destroyCharts();
+  const ws = myWeights();
+  // peso
+  const wc = $('#c-weight').getContext('2d');
+  charts.weight = new Chart(wc,{ type:'line',
+    data:{ labels:ws.map(w=>fmtDate(w.date)), datasets:[{ label:'Peso (kg)', data:ws.map(w=>w.weight),
+      borderColor:CH.red, borderWidth:3, tension:.4, pointBackgroundColor:CH.orange, pointRadius:4, fill:true,
+      backgroundColor:(c)=>{ const a=c.chart.chartArea; return a?gradient(c.chart.ctx,a,'rgba(255,45,85,.35)','rgba(255,45,85,0)'):'transparent'; } }] },
+    options:baseOpts({plugins:{legend:{display:false}}}) });
+  // volumen
+  const workouts = myWorkouts();
+  const vc = $('#c-vol').getContext('2d');
+  charts.vol = new Chart(vc,{ type:'bar',
+    data:{ labels:workouts.map(w=>fmtDate(w.date)), datasets:[{ label:'Volumen (kg)', data:workouts.map(volume),
+      borderRadius:8, backgroundColor:(c)=>{ const a=c.chart.chartArea; return a?gradient(c.chart.ctx,a,'#FF9500','#FF2D55'):'#FF2D55'; } }] },
+    options:baseOpts({plugins:{legend:{display:false}}}) });
+  // nutrición
+  const g=myGoals(); const t=macrosOfMeal(getTodayMeal());
+  const nc = $('#c-nutri').getContext('2d');
+  charts.nutri = new Chart(nc,{ type:'bar',
+    data:{ labels:['Calorías','Proteína','Carbos','Grasas'],
+      datasets:[
+        { label:'Consumido', data:[t.kcal,t.protein,t.carbs,t.fat], backgroundColor:CH.red, borderRadius:6 },
+        { label:'Meta', data:[g.kcal,g.protein,g.carbs,g.fat], backgroundColor:'rgba(255,149,0,.55)', borderRadius:6 }
+      ] },
+    options:baseOpts() });
+}
+
+/* ============================================================
+   PDF
+   ============================================================ */
+function reportShell(title, subtitle, inner){
+  return `
+  <div style="width:760px; background:#0B0B0C; color:#fff; font-family:Arial,Helvetica,sans-serif; padding:40px;">
+    <div style="display:flex; align-items:center; justify-content:space-between; border-bottom:3px solid; border-image:linear-gradient(90deg,#FF2D55,#FF9500) 1; padding-bottom:16px; margin-bottom:24px;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div style="width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#FF2D55,#FF9500);display:flex;align-items:center;justify-content:center;font-size:24px;">🔥</div>
+        <div><div style="font-size:22px;font-weight:800;">zebbetag Fitness</div>
+        <div style="font-size:12px;color:#A1A1AA;">${subtitle}</div></div>
+      </div>
+      <div style="text-align:right;color:#A1A1AA;font-size:12px;">${new Date().toLocaleDateString('es-MX',{day:'2-digit',month:'long',year:'numeric'})}</div>
+    </div>
+    <h1 style="font-size:26px;margin:0 0 20px;background:linear-gradient(90deg,#FF2D55,#FF9500);-webkit-background-clip:text;background-clip:text;color:transparent;">${title}</h1>
+    ${inner}
+    <div style="margin-top:30px;text-align:center;color:#4b4b52;font-size:11px;">Generado por zebbetag Fitness · Entrena. Registra. Progresa.</div>
+  </div>`;
+}
+function cmpTable(rows){
+  return `
+  <table style="width:100%;border-collapse:collapse;margin-bottom:20px;font-size:13px;">
+    <thead><tr style="background:rgba(255,255,255,.06);">
+      <th style="text-align:left;padding:10px;border-bottom:1px solid rgba(255,255,255,.15);">Ejercicio</th>
+      <th style="text-align:center;padding:10px;border-bottom:1px solid rgba(255,255,255,.15);color:#A1A1AA;">Anterior</th>
+      <th style="text-align:center;padding:10px;border-bottom:1px solid rgba(255,255,255,.15);">Actual</th>
+      <th style="text-align:center;padding:10px;border-bottom:1px solid rgba(255,255,255,.15);">Δ</th>
+    </tr></thead><tbody>${rows}</tbody></table>`;
+}
+async function renderPDF(html, filename){
+  const host=$('#report-host'); host.innerHTML=html;
+  const node=host.firstElementChild;
+  await new Promise(r=>setTimeout(r,120));
+  const canvas=await html2canvas(node,{scale:2,backgroundColor:'#0B0B0C'});
+  host.innerHTML='';
+  const { jsPDF }=window.jspdf;
+  const pdf=new jsPDF('p','mm','a4');
+  const pw=pdf.internal.pageSize.getWidth();
+  const ph=pdf.internal.pageSize.getHeight();
+  const imgW=pw; const imgH=canvas.height*pw/canvas.width;
+  let left=imgH, pos=0;
+  const img=canvas.toDataURL('image/png');
+  pdf.addImage(img,'PNG',0,pos,imgW,imgH);
+  left-=ph;
+  while(left>0){ pos=left-imgH; pdf.addPage(); pdf.addImage(img,'PNG',0,pos,imgW,imgH); left-=ph; }
+  pdf.save(filename);
+}
+function exportMusclePDF(){
+  const muscle=$('#pdf-muscle').value;
+  const pid=AP();
+  const cmp=compareByMuscle(muscle,pid);
+  const rows=cmp.map(c=>{
+    const pv=c.prev?c.prev.weight*c.prev.sets*c.prev.reps:0;
+    const cv=c.cur.weight*c.cur.sets*c.cur.reps;
+    const delta=pv?Math.round((cv-pv)/pv*100):null;
+    const col=delta===null?'#A1A1AA':(delta>=0?'#FF9500':'#FF2D55');
+    return `<tr>
+      <td style="padding:10px;border-bottom:1px solid rgba(255,255,255,.08);">${escapeHtml(c.name)}</td>
+      <td style="padding:10px;text-align:center;border-bottom:1px solid rgba(255,255,255,.08);color:#A1A1AA;">${c.prev?`${c.prev.weight}${c.prev.unit} · ${c.prev.sets}×${c.prev.reps}`:'—'}</td>
+      <td style="padding:10px;text-align:center;border-bottom:1px solid rgba(255,255,255,.08);font-weight:700;">${c.cur.weight}${c.cur.unit} · ${c.cur.sets}×${c.cur.reps}</td>
+      <td style="padding:10px;text-align:center;border-bottom:1px solid rgba(255,255,255,.08);color:${col};font-weight:700;">${delta===null?'—':(delta>=0?'+':'')+delta+'%'}</td>
+    </tr>`;
+  }).join('');
+  const inner = `<div style="margin-bottom:8px;color:#A1A1AA;font-size:13px;">Persona: <b style="color:#fff;">${escapeHtml(personaName(pid))}</b> · Grupo muscular: <b style="color:#fff;">${muscle}</b> · Anterior vs. Actual</div>${cmpTable(rows||'<tr><td style="padding:12px;color:#A1A1AA;">Sin datos.</td></tr>')}`;
+  renderPDF(reportShell('Reporte de Entrenamiento','Reporte por grupo muscular · '+personaName(pid),inner), `zebbetag_${personaName(pid)}_${muscle}.pdf`);
+}
+function exportPersonaStatsPDF(pid){
+  pid = pid || AP();
+  const ws=myWeights(pid); const workouts=myWorkouts(pid); const g=myGoals(pid); const t=macrosOfMeal(getTodayMeal(pid));
+  const name=personaName(pid);
+  const wDelta = ws.length>1 ? (ws[ws.length-1].weight-ws[0].weight).toFixed(1) : '0';
+  const totVol = workouts.reduce((s,w)=>s+volume(w),0);
+  const card=(l,v,c)=>`<div style="flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:16px;text-align:center;">
+    <div style="font-size:12px;color:#A1A1AA;">${l}</div><div style="font-size:22px;font-weight:800;color:${c};">${v}</div></div>`;
+  const nutriRow=(l,v,gg)=>{ const over=v>gg; return `<tr>
+    <td style="padding:8px;border-bottom:1px solid rgba(255,255,255,.08);">${l}</td>
+    <td style="padding:8px;text-align:right;border-bottom:1px solid rgba(255,255,255,.08);color:${over?'#FF2D55':'#fff'};font-weight:700;">${v}</td>
+    <td style="padding:8px;text-align:right;border-bottom:1px solid rgba(255,255,255,.08);color:#A1A1AA;">${gg}</td></tr>`; };
+  const inner=`
+    <div style="display:flex;gap:12px;margin-bottom:24px;">
+      ${card('Peso actual', (ws.length?ws[ws.length-1].weight:'—')+' kg', '#FF9500')}
+      ${card('Cambio de peso', (wDelta>0?'+':'')+wDelta+' kg', wDelta<=0?'#FF9500':'#FF2D55')}
+      ${card('Volumen total', totVol.toLocaleString('es-MX')+' kg', '#FF2D55')}
+      ${card('Sesiones', workouts.length, '#FF9500')}
+    </div>
+    <h2 style="font-size:16px;margin:0 0 8px;">Adherencia nutricional (hoy)</h2>
+    <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:24px;">
+      <thead><tr style="color:#A1A1AA;"><th style="text-align:left;padding:8px;">Macro</th><th style="text-align:right;padding:8px;">Consumido</th><th style="text-align:right;padding:8px;">Meta</th></tr></thead>
+      <tbody>${nutriRow('Calorías (kcal)',t.kcal,g.kcal)}${nutriRow('Proteína (g)',t.protein,g.protein)}${nutriRow('Carbohidratos (g)',t.carbs,g.carbs)}${nutriRow('Grasas (g)',t.fat,g.fat)}</tbody>
+    </table>
+    <h2 style="font-size:16px;margin:0 0 8px;">Historial de entrenamientos</h2>
+    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+      <thead><tr style="color:#A1A1AA;"><th style="text-align:left;padding:8px;">Fecha</th><th style="text-align:left;padding:8px;">Grupos</th><th style="text-align:right;padding:8px;">Volumen</th></tr></thead>
+      <tbody>${workouts.map(w=>`<tr><td style="padding:8px;border-bottom:1px solid rgba(255,255,255,.08);">${fmtDate(w.date)}</td><td style="padding:8px;border-bottom:1px solid rgba(255,255,255,.08);color:#A1A1AA;">${w.muscles.join(', ')||'—'}</td><td style="padding:8px;text-align:right;border-bottom:1px solid rgba(255,255,255,.08);font-weight:700;">${volume(w).toLocaleString('es-MX')} kg</td></tr>`).join('')||'<tr><td colspan="3" style="padding:12px;color:#A1A1AA;">Sin datos.</td></tr>'}</tbody>
+    </table>`;
+  renderPDF(reportShell('Estadísticas de '+name,'Reporte de progreso individual',inner), `zebbetag_${name}_estadisticas.pdf`);
+}
+
+function exportPersonaDayPDF(pid, date){
+  pid = pid || AP(); date = date || today();
+  const name = personaName(pid);
+  const w = db.workouts.find(x=>x.personaId===pid && x.date===date);
+  let inner;
+  if(!w || !w.exercises.length){
+    inner = `<div style="color:#A1A1AA;font-size:14px;padding:12px 0;">${escapeHtml(name)} no tiene rutina registrada el ${fmtDate(date)}.</div>`;
+  } else {
+    const chips = w.muscles.map(m=>`<span style="display:inline-block;padding:5px 12px;border-radius:999px;background:linear-gradient(135deg,#FF2D55,#FF9500);color:#fff;font-size:12px;font-weight:700;margin-right:6px;">${m}</span>`).join('');
+    const rows = w.exercises.map((e,i)=>`<tr>
+      <td style="padding:10px;border-bottom:1px solid rgba(255,255,255,.08);color:#A1A1AA;">${i+1}</td>
+      <td style="padding:10px;border-bottom:1px solid rgba(255,255,255,.08);font-weight:600;">${escapeHtml(e.name)}</td>
+      <td style="padding:10px;text-align:center;border-bottom:1px solid rgba(255,255,255,.08);">${e.weight} ${e.unit}</td>
+      <td style="padding:10px;text-align:center;border-bottom:1px solid rgba(255,255,255,.08);">${e.sets}</td>
+      <td style="padding:10px;text-align:center;border-bottom:1px solid rgba(255,255,255,.08);">${e.reps}</td>
+    </tr>`).join('');
+    const cardio = w.cardio && w.cardio.on
+      ? `<div style="margin-top:18px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:14px;font-size:13px;">🏃 <b>Cardio:</b> ${w.cardio.machine} · ${w.cardio.time} min · inclinación ${w.cardio.incline} · nivel ${w.cardio.level}</div>`
+      : '';
+    inner = `
+      <div style="margin-bottom:14px;">${chips}</div>
+      <table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <thead><tr style="background:rgba(255,255,255,.06);color:#A1A1AA;">
+          <th style="text-align:left;padding:10px;">#</th><th style="text-align:left;padding:10px;">Ejercicio</th>
+          <th style="text-align:center;padding:10px;">Peso</th><th style="text-align:center;padding:10px;">Series</th><th style="text-align:center;padding:10px;">Reps</th>
+        </tr></thead><tbody>${rows}</tbody>
+      </table>
+      ${cardio}
+      <div style="margin-top:18px;text-align:right;font-size:14px;">Volumen del día: <b style="color:#FF9500;">${volume(w).toLocaleString('es-MX')} kg</b></div>`;
+  }
+  const sub = name + ' · ' + fmtDate(date);
+  renderPDF(reportShell('Rutina del día', sub, inner), `zebbetag_${name}_rutina_${date}.pdf`);
+}
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+function showModal(inner){
+  $('#modal-root').innerHTML = `<div class="modal-bg" onclick="if(event.target===this)closeModal()">
+    <div class="glass-strong rounded-3xl p-6 w-full max-w-md fade" style="max-height:90vh;overflow-y:auto">${inner}</div></div>`;
+}
+function closeModal(){ $('#modal-root').innerHTML=''; }
+
+/* ============================================================
+   ARRANQUE
+   ============================================================ */
+setAuthMode('login');
+if(CU() && db.users.find(u=>u.id===CU())){ enterApp(); }
+</script>
+</body>
+</html>
