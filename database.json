@@ -409,7 +409,7 @@
       ],
       "cardio": {
         "on": true,
-        "time": 120,
+        "time": 30,
         "incline": 11,
         "level": 3,
         "machine": "Caminadora"
