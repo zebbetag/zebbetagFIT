@@ -391,6 +391,13 @@
           "unit": "lb",
           "sets": 3,
           "reps": 10
+        },
+        {
+          "name": "Copa Tríceps",
+          "weight": 40,
+          "unit": "lb",
+          "sets": 3,
+          "reps": 9
         }
       ],
       "cardio": {
@@ -789,6 +796,12 @@
       "userId": "demo",
       "name": "Plancha",
       "muscle": "Abdomen"
+    },
+    {
+      "id": "ido02xxp87fq",
+      "userId": "demo",
+      "name": "Copa Tríceps",
+      "muscle": "Tríceps"
     }
   ],
   "dishes": [
