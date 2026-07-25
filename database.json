@@ -268,7 +268,15 @@
       "personaId": "p2",
       "date": "2026-07-25",
       "muscles": [],
-      "exercises": [],
+      "exercises": [
+        {
+          "name": "Press banca",
+          "weight": 60,
+          "unit": "kg",
+          "sets": 3,
+          "reps": 8
+        }
+      ],
       "cardio": {
         "on": false
       }
