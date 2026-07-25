@@ -343,6 +343,16 @@
       "cardio": {
         "on": false
       }
+    },
+    {
+      "id": "idypyg68ones",
+      "personaId": "id4kypakfmt0",
+      "date": "2026-07-25",
+      "muscles": [],
+      "exercises": [],
+      "cardio": {
+        "on": false
+      }
     }
   ],
   "weights": [
@@ -865,6 +875,12 @@
       "fat": 60
     },
     "idl2irjsosh1": {
+      "kcal": 2000,
+      "protein": 150,
+      "carbs": 220,
+      "fat": 60
+    },
+    "id4kypakfmt0": {
       "kcal": 2000,
       "protein": 150,
       "carbs": 220,
