@@ -408,7 +408,11 @@
         }
       ],
       "cardio": {
-        "on": false
+        "on": true,
+        "time": "",
+        "incline": "",
+        "level": "",
+        "machine": "Caminadora"
       }
     }
   ],
