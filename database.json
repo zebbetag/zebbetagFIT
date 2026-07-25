@@ -358,7 +358,11 @@
       "id": "id90i4br4z0v",
       "personaId": "p3",
       "date": "2026-07-25",
-      "muscles": [],
+      "muscles": [
+        "Pectoral",
+        "Hombro",
+        "Tríceps"
+      ],
       "exercises": [],
       "cardio": {
         "on": false
