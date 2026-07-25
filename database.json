@@ -240,6 +240,13 @@
           "unit": "kg",
           "sets": 3,
           "reps": 10
+        },
+        {
+          "name": "Hammer strength",
+          "weight": 7,
+          "unit": "kg",
+          "sets": 3,
+          "reps": 10
         }
       ],
       "cardio": {
@@ -554,6 +561,12 @@
       "userId": "demo",
       "name": "Plancha",
       "muscle": "Abdomen"
+    },
+    {
+      "id": "id3sq9g7t8fb",
+      "userId": "demo",
+      "name": "Hammer strength",
+      "muscle": "Pectoral"
     }
   ],
   "dishes": [
