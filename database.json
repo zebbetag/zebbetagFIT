@@ -254,6 +254,13 @@
           "unit": "lb",
           "sets": 3,
           "reps": 9
+        },
+        {
+          "name": "Tríceps extensión",
+          "weight": 50,
+          "unit": "lb",
+          "sets": 3,
+          "reps": 10
         }
       ],
       "cardio": {
@@ -620,6 +627,12 @@
       "userId": "demo",
       "name": "Pecho Unilateral",
       "muscle": "Pectoral"
+    },
+    {
+      "id": "idv5j3a51jsh",
+      "userId": "demo",
+      "name": "Tríceps extensión",
+      "muscle": "Tríceps"
     }
   ],
   "dishes": [
