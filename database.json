@@ -384,6 +384,13 @@
           "unit": "lb",
           "sets": 3,
           "reps": 15
+        },
+        {
+          "name": "Press militar",
+          "weight": 80,
+          "unit": "lb",
+          "sets": 3,
+          "reps": 10
         }
       ],
       "cardio": {
