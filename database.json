@@ -254,6 +254,13 @@
           "unit": "lb",
           "sets": 3,
           "reps": 9
+        },
+        {
+          "name": "Tríceps extensión",
+          "weight": 65,
+          "unit": "lb",
+          "sets": 3,
+          "reps": 8
         }
       ],
       "cardio": {
@@ -634,6 +641,12 @@
     },
     {
       "id": "idv5j3a51jsh",
+      "userId": "demo",
+      "name": "Tríceps extensión",
+      "muscle": "Tríceps"
+    },
+    {
+      "id": "idupeubcd5id",
       "userId": "demo",
       "name": "Tríceps extensión",
       "muscle": "Tríceps"
