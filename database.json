@@ -377,6 +377,13 @@
           "unit": "lb",
           "sets": 3,
           "reps": 10
+        },
+        {
+          "name": "Elevaciones laterales",
+          "weight": 15,
+          "unit": "lb",
+          "sets": 3,
+          "reps": 10
         }
       ],
       "cardio": {
@@ -709,6 +716,12 @@
       "userId": "demo",
       "name": "Tríceps Extensión",
       "muscle": "Tríceps"
+    },
+    {
+      "id": "idveu9urbcps",
+      "userId": "demo",
+      "name": "Elevaciones laterales",
+      "muscle": "Hombro"
     }
   ],
   "dishes": [
