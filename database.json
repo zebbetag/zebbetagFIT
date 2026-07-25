@@ -223,6 +223,16 @@
           "reps": 10
         }
       ]
+    },
+    {
+      "id": "id0qzqr22akh",
+      "personaId": "p1",
+      "date": "2026-07-25",
+      "muscles": [],
+      "exercises": [],
+      "cardio": {
+        "on": false
+      }
     }
   ],
   "weights": [
@@ -382,6 +392,66 @@
       "userId": "demo",
       "name": "Plancha",
       "muscle": "Abdomen"
+    },
+    {
+      "id": "idys24k43puu",
+      "userId": "demo",
+      "name": "Jalón al pecho",
+      "muscle": "Espalda"
+    },
+    {
+      "id": "idpye64bapuu",
+      "userId": "demo",
+      "name": "Remo con barra",
+      "muscle": "Espalda"
+    },
+    {
+      "id": "idb4b7dk4puu",
+      "userId": "demo",
+      "name": "Curl con barra",
+      "muscle": "Bíceps"
+    },
+    {
+      "id": "idijz11q8puu",
+      "userId": "demo",
+      "name": "Press banca",
+      "muscle": "Pectoral"
+    },
+    {
+      "id": "idzdwex7tpuu",
+      "userId": "demo",
+      "name": "Aperturas",
+      "muscle": "Pectoral"
+    },
+    {
+      "id": "id5s2j73fpuu",
+      "userId": "demo",
+      "name": "Press militar",
+      "muscle": "Hombro"
+    },
+    {
+      "id": "idjtlbztkpuu",
+      "userId": "demo",
+      "name": "Extensión tríceps polea",
+      "muscle": "Tríceps"
+    },
+    {
+      "id": "id49vhz81puu",
+      "userId": "demo",
+      "name": "Sentadilla",
+      "muscle": "Pierna"
+    },
+    {
+      "id": "idzo60hoipuu",
+      "userId": "demo",
+      "name": "Prensa",
+      "muscle": "Pierna"
+    },
+    {
+      "id": "idmkgbk6dpuu",
+      "userId": "demo",
+      "name": "Plancha",
+      "muscle": "Abdomen"
     }
   ],
   "dishes": [
@@ -431,6 +501,61 @@
     },
     {
       "id": "idnkaohf1wrj",
+      "userId": "demo",
+      "name": "Whey protein (scoop)",
+      "kcal": 120,
+      "protein": 24,
+      "carbs": 3,
+      "fat": 1.5,
+      "portion": 1,
+      "unitType": "u"
+    },
+    {
+      "id": "idza3g6fcpux",
+      "userId": "demo",
+      "name": "Pechuga de pollo",
+      "kcal": 165,
+      "protein": 31,
+      "carbs": 0,
+      "fat": 3.6,
+      "portion": 100,
+      "unitType": "g"
+    },
+    {
+      "id": "idy4jvu5ipux",
+      "userId": "demo",
+      "name": "Arroz blanco cocido",
+      "kcal": 130,
+      "protein": 2.7,
+      "carbs": 28,
+      "fat": 0.3,
+      "portion": 100,
+      "unitType": "g"
+    },
+    {
+      "id": "idqpzgw5epux",
+      "userId": "demo",
+      "name": "Huevo entero",
+      "kcal": 78,
+      "protein": 6.3,
+      "carbs": 0.6,
+      "fat": 5.3,
+      "portion": 1,
+      "unitType": "u"
+    },
+    {
+      "id": "id5f4nnzfpux",
+      "userId": "demo",
+      "name": "Avena",
+      "kcal": 389,
+      "protein": 16.9,
+      "carbs": 66,
+      "fat": 6.9,
+      "portion": 100,
+      "unitType": "g"
+    },
+    {
+      "id": "idoj3fgdgpux",
       "userId": "demo",
       "name": "Whey protein (scoop)",
       "kcal": 120,
