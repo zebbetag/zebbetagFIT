@@ -367,6 +367,12 @@
       "personaId": "p1",
       "date": "2026-07-23",
       "weight": 100
+    },
+    {
+      "id": "idumvmu0bn9s",
+      "personaId": "p2",
+      "date": "2026-07-25",
+      "weight": 90
     }
   ],
   "meals": [
