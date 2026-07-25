@@ -247,6 +247,13 @@
           "unit": "kg",
           "sets": 3,
           "reps": 10
+        },
+        {
+          "name": "Pecho Unilateral",
+          "weight": 7.5,
+          "unit": "lb",
+          "sets": 3,
+          "reps": 9
         }
       ],
       "cardio": {
@@ -581,6 +588,12 @@
       "id": "id3sq9g7t8fb",
       "userId": "demo",
       "name": "Hammer strength",
+      "muscle": "Pectoral"
+    },
+    {
+      "id": "id1mg7ar0cuu",
+      "userId": "demo",
+      "name": "Pecho Unilateral",
       "muscle": "Pectoral"
     }
   ],
