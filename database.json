@@ -372,13 +372,6 @@
           "reps": 12
         },
         {
-          "name": "Aperturas",
-          "weight": 25,
-          "unit": "lb",
-          "sets": 3,
-          "reps": 10
-        },
-        {
           "name": "Elevaciones laterales",
           "weight": 15,
           "unit": "lb",
