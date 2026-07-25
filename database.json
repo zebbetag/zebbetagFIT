@@ -377,6 +377,13 @@
           "unit": "lb",
           "sets": 3,
           "reps": 10
+        },
+        {
+          "name": "Aperturas",
+          "weight": 25,
+          "unit": "lb",
+          "sets": 3,
+          "reps": 15
         }
       ],
       "cardio": {
