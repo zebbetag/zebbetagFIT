@@ -289,6 +289,13 @@
           "unit": "kg",
           "sets": 3,
           "reps": 10
+        },
+        {
+          "name": "Pecho Unilateral",
+          "weight": 7.5,
+          "unit": "lb",
+          "sets": 3,
+          "reps": 10
         }
       ],
       "cardio": {
