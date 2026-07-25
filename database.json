@@ -281,7 +281,11 @@
       "id": "idy9ck6kz5ar",
       "personaId": "p2",
       "date": "2026-07-25",
-      "muscles": [],
+      "muscles": [
+        "Pectoral",
+        "Hombro",
+        "Tríceps"
+      ],
       "exercises": [
         {
           "name": "Press banca",
