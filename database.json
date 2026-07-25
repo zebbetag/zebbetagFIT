@@ -240,13 +240,6 @@
           "unit": "kg",
           "sets": 3,
           "reps": 10
-        },
-        {
-          "name": "Hammer strength",
-          "weight": 7,
-          "unit": "kg",
-          "sets": 3,
-          "reps": 10
         }
       ],
       "cardio": {
