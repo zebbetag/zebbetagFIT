@@ -363,7 +363,15 @@
         "Hombro",
         "Tríceps"
       ],
-      "exercises": [],
+      "exercises": [
+        {
+          "name": "Press banca",
+          "weight": 50,
+          "unit": "kg",
+          "sets": 3,
+          "reps": 12
+        }
+      ],
       "cardio": {
         "on": false
       }
