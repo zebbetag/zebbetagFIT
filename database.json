@@ -414,6 +414,16 @@
         "level": 4.5,
         "machine": "Caminadora"
       }
+    },
+    {
+      "id": "iddhmfak72w4",
+      "personaId": "p1",
+      "date": "2026-07-27",
+      "muscles": [],
+      "exercises": [],
+      "cardio": {
+        "on": false
+      }
     }
   ],
   "weights": [
