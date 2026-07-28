@@ -424,6 +424,26 @@
       "cardio": {
         "on": false
       }
+    },
+    {
+      "id": "idv67y8m8e6k",
+      "personaId": "p1",
+      "date": "2026-07-28",
+      "muscles": [],
+      "exercises": [],
+      "cardio": {
+        "on": false
+      }
+    },
+    {
+      "id": "id0h0s73yfix",
+      "personaId": "p2",
+      "date": "2026-07-28",
+      "muscles": [],
+      "exercises": [],
+      "cardio": {
+        "on": false
+      }
     }
   ],
   "weights": [
