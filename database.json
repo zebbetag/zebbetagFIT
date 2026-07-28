@@ -429,7 +429,11 @@
       "id": "idv67y8m8e6k",
       "personaId": "p1",
       "date": "2026-07-28",
-      "muscles": [],
+      "muscles": [
+        "Pectoral",
+        "Hombro",
+        "Tríceps"
+      ],
       "exercises": [],
       "cardio": {
         "on": false
