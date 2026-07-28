@@ -528,7 +528,7 @@
         "on": true,
         "time": 30,
         "incline": 11,
-        "level": "",
+        "level": 4.2,
         "machine": "Caminadora"
       }
     }
