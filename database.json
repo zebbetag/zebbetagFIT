@@ -462,6 +462,13 @@
           "unit": "kg",
           "sets": 3,
           "reps": 10
+        },
+        {
+          "name": "Press militar",
+          "weight": 15,
+          "unit": "kg",
+          "sets": 3,
+          "reps": 10
         }
       ],
       "cardio": {
