@@ -487,7 +487,15 @@
       "personaId": "p2",
       "date": "2026-07-28",
       "muscles": [],
-      "exercises": [],
+      "exercises": [
+        {
+          "name": "Press inclinado",
+          "weight": 50,
+          "unit": "kg",
+          "sets": 3,
+          "reps": 10
+        }
+      ],
       "cardio": {
         "on": false
       }
