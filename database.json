@@ -434,7 +434,15 @@
         "Hombro",
         "Tríceps"
       ],
-      "exercises": [],
+      "exercises": [
+        {
+          "name": "Press inclinado",
+          "weight": 30,
+          "unit": "kg",
+          "sets": 3,
+          "reps": 10
+        }
+      ],
       "cardio": {
         "on": false
       }
@@ -847,6 +855,12 @@
       "userId": "demo",
       "name": "Copa Tríceps",
       "muscle": "Tríceps"
+    },
+    {
+      "id": "idiiv86fv580",
+      "userId": "demo",
+      "name": "Press inclinado",
+      "muscle": "Pectoral"
     }
   ],
   "dishes": [
