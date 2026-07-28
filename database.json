@@ -508,6 +508,13 @@
           "unit": "kg",
           "sets": 3,
           "reps": 11
+        },
+        {
+          "name": "Pajaros",
+          "weight": 8,
+          "unit": "kg",
+          "sets": 3,
+          "reps": 12
         }
       ],
       "cardio": {
@@ -923,6 +930,12 @@
       "id": "idzj8dh7cosq",
       "userId": "demo",
       "name": "Press militar máquina",
+      "muscle": "Hombro"
+    },
+    {
+      "id": "idh51ud7gwsx",
+      "userId": "demo",
+      "name": "Pajaros",
       "muscle": "Hombro"
     }
   ],
