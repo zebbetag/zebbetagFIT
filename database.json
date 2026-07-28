@@ -469,6 +469,13 @@
           "unit": "kg",
           "sets": 3,
           "reps": 10
+        },
+        {
+          "name": "Press militar máquina",
+          "weight": 30,
+          "unit": "lb",
+          "sets": 3,
+          "reps": 10
         }
       ],
       "cardio": {
@@ -889,6 +896,12 @@
       "userId": "demo",
       "name": "Press inclinado",
       "muscle": "Pectoral"
+    },
+    {
+      "id": "idzj8dh7cosq",
+      "userId": "demo",
+      "name": "Press militar máquina",
+      "muscle": "Hombro"
     }
   ],
   "dishes": [
