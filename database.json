@@ -494,6 +494,13 @@
           "unit": "kg",
           "sets": 3,
           "reps": 10
+        },
+        {
+          "name": "Press banca",
+          "weight": 85,
+          "unit": "lb",
+          "sets": 3,
+          "reps": 12
         }
       ],
       "cardio": {
