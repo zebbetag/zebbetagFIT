@@ -448,6 +448,13 @@
           "unit": "lb",
           "sets": 3,
           "reps": 8
+        },
+        {
+          "name": "Aperturas",
+          "weight": 7,
+          "unit": "kg",
+          "sets": 3,
+          "reps": 10
         }
       ],
       "cardio": {
