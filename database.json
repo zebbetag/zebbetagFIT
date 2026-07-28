@@ -455,6 +455,13 @@
           "unit": "kg",
           "sets": 3,
           "reps": 10
+        },
+        {
+          "name": "Elevaciones laterales",
+          "weight": 10,
+          "unit": "kg",
+          "sets": 3,
+          "reps": 10
         }
       ],
       "cardio": {
